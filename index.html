@@ -986,7 +986,7 @@
       </div>
     </div>
     <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
-      <button class="btn-primary" onclick="vibracionSuave(); goTo(2); setTimeout(()=>{var v=document.getElementById('videoS2'); if(v){v.muted=false; v.play();}},300)">
+      <button class="btn-primary" onclick="vibracionSuave(); preloadWaAudios(); goTo(2); setTimeout(()=>{var v=document.getElementById('videoS2'); if(v){v.muted=false; v.play();}},300)">
         <span>ENTRAR A LA EXPERIENCIA</span>
         <span>→</span>
       </button>
@@ -1338,7 +1338,7 @@
     document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     if (isCorrect) {
-      setTimeout(() => goTo(7), 700);
+      setTimeout(() => goTo(6), 700);
     } else {
       btn.style.opacity = '0.3';
       setTimeout(() => { btn.style.opacity = '1'; btn.classList.remove('selected'); }, 600);
@@ -1449,7 +1449,18 @@
     { time: '07:11', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio4.mp3' },
   ];
 
-  function makeWaBubble(timeStr, audioUrl) {
+  // Pre-instanciar audios para que el navegador los considere listos desde el primer gesto
+  let waAudioObjects = [];
+  function preloadWaAudios() {
+    waAudioObjects = waAudios.map(a => {
+      const audio = new Audio(a.url);
+      audio.preload = 'auto';
+      audio.load();
+      return audio;
+    });
+  }
+
+  function makeWaBubble(timeStr, audioObj) {
     const div = document.createElement('div');
     div.className = 'wa-bubble';
     const heights = [24,18,32,14,28,20,36,16,22,30,12,26];
@@ -1457,7 +1468,6 @@
     for(let i=0;i<12;i++){
       bars += `<div class="wa-wave-bar" style="height:${heights[i]}px"></div>`;
     }
-    const audio = audioUrl ? new Audio(audioUrl) : null;
     div.innerHTML = `
       <div class="wa-play-btn" style="cursor:pointer;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)"><polygon points="5,3 19,12 5,21"/></svg>
@@ -1465,13 +1475,11 @@
       <div class="wa-waveform">${bars}</div>
       <div class="wa-time">${timeStr}</div>
     `;
-    if (audio) {
+    if (audioObj) {
       div.querySelector('.wa-play-btn').addEventListener('click', () => {
-        audio.currentTime = 0;
-        audio.play().catch(e => console.log('Audio error:', e));
+        audioObj.currentTime = 0;
+        audioObj.play().catch(e => console.log('Audio error:', e));
       });
-      // Auto-reproducir cuando aparece la burbuja
-      setTimeout(() => audio.play().catch(e => console.log(e)), 300);
     }
     return div;
   }
@@ -1481,24 +1489,45 @@
     container.innerHTML = '';
     const status = document.getElementById('waStatus');
     let i = 0;
+
     function addNext() {
       if (i >= waAudios.length) {
         setTimeout(() => goTo(7), 1200);
         return;
       }
+
       status.textContent = 'grabando audio...';
       status.className = 'wa-status typing';
+
+      const audioObj = waAudioObjects[i] || new Audio(waAudios[i].url);
+      const idx = i;
+      i++;
+
+      const onAudioDone = () => {
+        setTimeout(addNext, 600);
+      };
+
       setTimeout(() => {
         status.textContent = 'en línea';
         status.className = 'wa-status';
-        const bubble = makeWaBubble(waAudios[i].time, waAudios[i].url);
+
+        const bubble = makeWaBubble(waAudios[idx].time, audioObj);
         container.appendChild(bubble);
         setTimeout(() => bubble.classList.add('show'), 50);
         container.scrollTop = container.scrollHeight;
-        i++;
-        setTimeout(addNext, 1800);
+
+        audioObj.currentTime = 0;
+        audioObj.play()
+          .then(() => {
+            audioObj.addEventListener('ended', onAudioDone, { once: true });
+          })
+          .catch(e => {
+            console.log('Audio WA bloqueado:', e);
+            setTimeout(onAudioDone, 3000);
+          });
       }, 1200);
     }
+
     setTimeout(addNext, 800);
   }
 
