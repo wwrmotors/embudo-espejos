@@ -986,7 +986,7 @@
       </div>
     </div>
     <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
-      <button class="btn-primary" onclick="goTo(2); setTimeout(()=>{var v=document.getElementById('videoS2'); if(v){v.muted=false; v.play();}},300)">
+      <button class="btn-primary" onclick="vibracionSuave(); goTo(2); setTimeout(()=>{var v=document.getElementById('videoS2'); if(v){v.muted=false; v.play();}},300)">
         <span>ENTRAR A LA EXPERIENCIA</span>
         <span>→</span>
       </button>
@@ -1347,12 +1347,16 @@
     }
   }
 
+  function vibracionSuave() {
+    // Vibración suave al entrar — desbloquea el navegador
+    if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
+  }
+
   function startVibration() {
-    // Vibración del dispositivo si está disponible
     if (navigator.vibrate) {
-      // Patrón: vibra 600ms, pausa 300ms, repite 6 veces
+      // Patrón fuerte de llamada entrante: vibra 700ms, pausa 400ms × 10 veces
       const pattern = [];
-      for (let i = 0; i < 8; i++) { pattern.push(600, 300); }
+      for (let i = 0; i < 10; i++) { pattern.push(700, 400); }
       navigator.vibrate(pattern);
     }
   }
