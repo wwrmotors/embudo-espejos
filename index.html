@@ -1165,21 +1165,26 @@
 
 <!-- ===== SCREEN 8: TIKTOK ===== -->
 <div class="screen" id="s8">
-  <div class="tiktok-video"></div>
-  <div class="tiktok-brand">W W R &nbsp; M O T O R S</div>
-  
-  <div class="tt-play-icon">
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)"><circle cx="12" cy="12" r="10" fill="rgba(0,0,0,0.4)"/><polygon points="10,8 16,12 10,16" fill="white"/></svg>
-  </div>
 
-  <div class="tiktok-sidebar">
+  <!-- Video real -->
+  <video id="videoTiktok" playsinline muted loop
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4"
+    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"
+    poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80">
+  </video>
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%);z-index:1;"></div>
+
+  <div class="tiktok-brand" style="z-index:3;">W W R &nbsp; M O T O R S</div>
+
+  <div class="tiktok-sidebar" style="z-index:3;">
     <div class="tt-avatar" style="position:relative;">
       <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="piloto" onerror="this.style.background='#333'">
       <div class="tt-plus">+</div>
     </div>
+    <!-- Likes con contador animado -->
     <div class="tt-action">
-      <div class="tt-action-icon">🤍</div>
-      <div class="tt-action-count">1.2K</div>
+      <div id="ttLikeIcon" style="font-size:32px; cursor:pointer;" onclick="ttToggleLike()">🤍</div>
+      <div class="tt-action-count" id="ttLikeCount">1.2K</div>
     </div>
     <div class="tt-action">
       <div class="tt-action-icon">💬</div>
@@ -1191,12 +1196,12 @@
     </div>
   </div>
 
-  <div class="tiktok-info">
+  <div class="tiktok-info" style="z-index:3;">
     <div class="tt-handle">@wwrmotors_oficial</div>
     <div class="tt-caption">El espejo que está cambiando el juego en Colombia 🇨🇴 #moto #espejos #wwrmotors</div>
   </div>
 
-  <div class="tiktok-nav">
+  <div class="tiktok-nav" style="z-index:3;">
     <div class="tt-nav-item active">
       <div class="tt-nav-icon">🏠</div>
       <div>Inicio</div>
@@ -1354,6 +1359,17 @@
     if (n === 3) startVibration();
     if (n === 6) startWaSequence();
     if (n === 7) setLockTime();
+    if (n === 8) {
+      const v = document.getElementById('videoTiktok');
+      if (v) {
+        v.loop = false;
+        v.currentTime = 0;
+        v.play().catch(e => console.log(e));
+        v.onended = () => { ttStopLikes(); goTo(9); };
+      }
+      ttStartLikes();
+    }
+    if (n !== 8) ttStopLikes();
     if (n === 9) updateTiempo();
   }
 
@@ -1564,6 +1580,48 @@
       if (spinner) spinner.style.display = 'none';
       if (btn) { btn.style.display = 'flex'; }
     }, 2000);
+  }
+
+  // ===== TIKTOK LIKES =====
+  let ttLikeCount = 1200;
+  let ttLiked = false;
+  let ttLikeInterval = null;
+
+  function ttStartLikes() {
+    // Sube de a 1 cada 1.5-3s simulando likes en tiempo real
+    ttLikeInterval = setInterval(() => {
+      ttLikeCount += Math.floor(Math.random() * 3) + 1;
+      document.getElementById('ttLikeCount').textContent = ttFormatCount(ttLikeCount);
+      // Mini animación en el número
+      const el = document.getElementById('ttLikeCount');
+      el.style.transform = 'scale(1.3)';
+      el.style.color = '#ff2d55';
+      setTimeout(() => { el.style.transform = 'scale(1)'; el.style.color = '#fff'; }, 300);
+    }, Math.random() * 1500 + 1500);
+  }
+
+  function ttStopLikes() {
+    if (ttLikeInterval) { clearInterval(ttLikeInterval); ttLikeInterval = null; }
+  }
+
+  function ttFormatCount(n) {
+    if (n >= 1000) return (n / 1000).toFixed(1).replace('.0','') + 'K';
+    return n;
+  }
+
+  function ttToggleLike() {
+    ttLiked = !ttLiked;
+    const icon = document.getElementById('ttLikeIcon');
+    if (ttLiked) {
+      ttLikeCount++;
+      icon.textContent = '❤️';
+      icon.style.transform = 'scale(1.4)';
+      setTimeout(() => icon.style.transform = 'scale(1)', 250);
+    } else {
+      ttLikeCount--;
+      icon.textContent = '🤍';
+    }
+    document.getElementById('ttLikeCount').textContent = ttFormatCount(ttLikeCount);
   }
 
   function updateTiempo() {
