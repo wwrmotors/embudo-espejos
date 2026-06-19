@@ -1389,7 +1389,26 @@
     const subtitle = document.getElementById('callSubtitle');
     let secs = 1;
     status.textContent = 'CONECTANDO...';
-    setTimeout(() => { status.textContent = 'EN LLAMADA'; }, 1200);
+
+    // Audio de la llamada
+    const callAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/audio%20llamada.mp3');
+    callAudio.volume = 1.0;
+    setTimeout(() => {
+      status.textContent = 'EN LLAMADA';
+      callAudio.play().catch(e => console.log('Audio bloqueado:', e));
+    }, 1200);
+
+    // Mostrar botón continuar cuando termina el audio (23 segundos)
+    setTimeout(() => {
+      const btn = document.getElementById('btnContinuar');
+      if (btn) {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'all';
+      }
+    }, 23000);
+
+    // Parar audio cuando salga de la pantalla
+    window._callAudio = callAudio;
     callInterval = setInterval(() => {
       secs++;
       const m = String(Math.floor(secs/60)).padStart(2,'0');
