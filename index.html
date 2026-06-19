@@ -1350,7 +1350,7 @@
   let vibracionAudio = null;
 
   function vibracionSuave() {
-    // Solo desbloquea el AudioContext con un sonido inaudible
+    // Desbloquea el audio en móvil con un sonido inaudible
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
@@ -1358,8 +1358,10 @@
       osc.connect(gain); gain.connect(ctx.destination);
       gain.gain.setValueAtTime(0.001, ctx.currentTime);
       osc.start(); osc.stop(ctx.currentTime + 0.1);
-      window._audioCtxUnlocked = ctx;
     } catch(e) {}
+    // También precargar el audio
+    vibracionAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1).mp3');
+    vibracionAudio.load();
   }
 
   function startVibration() {
@@ -1368,52 +1370,25 @@
       for (let i = 0; i < 10; i++) { pattern.push(700, 400); }
       navigator.vibrate(pattern);
     }
-    // Sonido que simula vibración: zumbido grave tipo "rrr rrr rrr"
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      let stopped = false;
-      window._vibracionCtx = ctx;
-
-      function buzzPulse(startTime) {
-        if (stopped) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        // Distorsion para sonar más rugoso
-        const wave = ctx.createWaveShaper();
-        const curve = new Float32Array(256);
-        for (let i = 0; i < 256; i++) {
-          const x = (i * 2) / 256 - 1;
-          curve[i] = (Math.PI + 200) * x / (Math.PI + 200 * Math.abs(x));
-        }
-        wave.curve = curve;
-
-        osc.connect(wave);
-        wave.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(55, startTime); // grave, como motor
-        osc.frequency.linearRampToValueAtTime(45, startTime + 0.5);
-
-        gain.gain.setValueAtTime(0, startTime);
-        gain.gain.linearRampToValueAtTime(0.9, startTime + 0.05);
-        gain.gain.setValueAtTime(0.9, startTime + 0.45);
-        gain.gain.linearRampToValueAtTime(0, startTime + 0.55);
-
-        osc.start(startTime);
-        osc.stop(startTime + 0.6);
+      if (!vibracionAudio) {
+        vibracionAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1).mp3');
       }
-
-      // Dispara pulsos cada 1.1s (0.7s vibra + 0.4s silencio)
-      for (let i = 0; i < 10; i++) {
-        buzzPulse(ctx.currentTime + i * 1.1);
-      }
+      vibracionAudio.loop = true;
+      vibracionAudio.volume = 1.0;
+      vibracionAudio.currentTime = 0;
+      vibracionAudio.play();
     } catch(e) {}
   }
 
   function stopVibration() {
     if (navigator.vibrate) navigator.vibrate(0);
-    try { if (window._vibracionCtx) window._vibracionCtx.close(); } catch(e) {}
+    try {
+      if (vibracionAudio) {
+        vibracionAudio.pause();
+        vibracionAudio.currentTime = 0;
+      }
+    } catch(e) {}
   }
 
   function startCallSequence() {
