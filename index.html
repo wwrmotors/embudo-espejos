@@ -1686,7 +1686,23 @@
     }, 4000);
 
     try {
-      // Iniciar predicción en Replicate con SDXL img2img
+      // PASO 1: Subir imagen a imgBB para obtener URL pública
+      if (statusEl) statusEl.textContent = 'Subiendo foto...';
+      const base64Data = imageDataUrl.split(',')[1];
+      const formData = new FormData();
+      formData.append('key', '4cbc85d2849183462fda403fe8d8ba17');
+      formData.append('image', base64Data);
+
+      const imgbbRes = await fetch('https://api.imgbb.com/1/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const imgbbData = await imgbbRes.json();
+      if (!imgbbData.success) throw new Error('Error subiendo imagen a imgBB');
+      const imageUrl = imgbbData.data.url;
+
+      // PASO 2: Enviar URL pública a Replicate
+      if (statusEl) statusEl.textContent = 'Aplicando espejos...';
       const startRes = await fetch('https://api.replicate.com/v1/predictions', {
         method: 'POST',
         headers: {
@@ -1696,7 +1712,7 @@
         body: JSON.stringify({
           version: 'stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37ec785867897dfbb704d4a',
           input: {
-            image: imageDataUrl,
+            image: imageUrl,
             prompt: 'same motorcycle with wing-shaped retractable side mirrors on handlebars, photorealistic, same background, same lighting, high quality, 4k',
             negative_prompt: 'different bike, different background, blurry, low quality, cartoon, drawing, missing mirrors',
             strength: 0.4,
@@ -1710,7 +1726,7 @@
       if (!startRes.ok) throw new Error('Error iniciando predicción');
       const prediction = await startRes.json();
 
-      // Polling hasta que termine
+      // PASO 3: Polling hasta que termine
       let result = null;
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
@@ -1719,7 +1735,7 @@
         });
         const poll = await pollRes.json();
         if (poll.status === 'succeeded') {
-          result = poll.output[0];
+          result = Array.isArray(poll.output) ? poll.output[0] : poll.output;
           break;
         }
         if (poll.status === 'failed') throw new Error('Predicción fallida');
@@ -1734,7 +1750,7 @@
 
     } catch(err) {
       clearInterval(msgInterval);
-      console.log('Replicate error:', err);
+      console.log('Error IA:', err);
       iaShow('ia-step4');
     }
   }
