@@ -1232,13 +1232,28 @@
     <!-- PASO 1: Invitación -->
     <div id="ia-step1" style="width:100%; display:flex; flex-direction:column; align-items:center; text-align:center;">
       <h2 class="ia-headline">¿Cómo quedaría<br><span class="text-red">tu moto?</span></h2>
-      <div class="ia-sub" style="margin-bottom:2rem;">TOMA UNA FOTO Y LA IA LO MUESTRA</div>
-      <div class="upload-zone" id="uploadZone" style="cursor:pointer;">
-        <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="iaHandlePhoto(event)">
+      <div class="ia-sub" style="margin-bottom:1.5rem;">LA IA PONE LOS ESPEJOS EN TU MOTO</div>
+
+      <!-- Cámara -->
+      <div class="upload-zone" id="uploadZone" style="cursor:pointer; margin-bottom:0.75rem; position:relative;">
+        <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="iaHandlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
         <div class="upload-icon">📸</div>
-        <div class="upload-text" style="font-size:15px; margin-bottom:0.5rem;">Toca para abrir la cámara</div>
-        <div class="upload-hint">Apunta a tu moto y toma la foto</div>
+        <div class="upload-text" style="font-size:14px; margin-bottom:0.25rem;">Abrir cámara</div>
+        <div class="upload-hint">Toma la foto ahora</div>
       </div>
+
+      <!-- Subir imagen -->
+      <div class="upload-zone" style="cursor:pointer; margin-bottom:0.75rem; position:relative; background:rgba(255,255,255,0.04);">
+        <input type="file" id="fileInputGaleria" accept="image/*" onchange="iaHandlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-text" style="font-size:14px; margin-bottom:0.25rem;">Subir desde galería</div>
+        <div class="upload-hint">Elige una foto existente</div>
+      </div>
+
+      <!-- Saltar -->
+      <button class="btn-secondary" onclick="goTo(12)" style="margin-top:0.5rem; width:100%; max-width:360px; opacity:0.6; font-size:11px; letter-spacing:3px;">
+        SALTAR ESTE PASO →
+      </button>
     </div>
 
     <!-- PASO 2: Procesando -->
@@ -1671,7 +1686,7 @@
     }, 4000);
 
     try {
-      // Iniciar predicción en Replicate
+      // Iniciar predicción en Replicate con SDXL img2img
       const startRes = await fetch('https://api.replicate.com/v1/predictions', {
         method: 'POST',
         headers: {
@@ -1679,14 +1694,15 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          version: 'stability-ai/stable-diffusion-img2img:15a3689ee13b0d2616e98820eca31d4af4b36f754e2e2fc35f7830e8f5b0cbba',
+          version: 'stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37ec785867897dfbb704d4a',
           input: {
             image: imageDataUrl,
-            prompt: 'motorcycle with sleek wing-shaped retractable mirrors installed on the handlebars, same motorcycle, same angle, same background, photorealistic, high quality',
-            negative_prompt: 'different motorcycle, different angle, low quality, blurry, cartoon',
-            strength: 0.55,
+            prompt: 'same motorcycle with wing-shaped retractable side mirrors on handlebars, photorealistic, same background, same lighting, high quality, 4k',
+            negative_prompt: 'different bike, different background, blurry, low quality, cartoon, drawing, missing mirrors',
+            strength: 0.4,
             guidance_scale: 7.5,
-            num_inference_steps: 30
+            num_inference_steps: 30,
+            scheduler: 'K_EULER'
           }
         })
       });
