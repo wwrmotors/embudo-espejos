@@ -1701,7 +1701,7 @@
       if (!imgbbData.success) throw new Error('Error subiendo imagen a imgBB');
       const imageUrl = imgbbData.data.url;
 
-      // PASO 2: Enviar URL pública a Replicate
+      // PASO 2: Enviar URL pública a Replicate con flux-dev img2img
       if (statusEl) statusEl.textContent = 'Aplicando espejos...';
       const startRes = await fetch('https://api.replicate.com/v1/predictions', {
         method: 'POST',
@@ -1710,15 +1710,15 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          version: 'stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37ec785867897dfbb704d4a',
+          model: 'black-forest-labs/flux-dev',
           input: {
             image: imageUrl,
-            prompt: 'same motorcycle with wing-shaped retractable side mirrors on handlebars, photorealistic, same background, same lighting, high quality, 4k',
-            negative_prompt: 'different bike, different background, blurry, low quality, cartoon, drawing, missing mirrors',
-            strength: 0.4,
-            guidance_scale: 7.5,
-            num_inference_steps: 30,
-            scheduler: 'K_EULER'
+            prompt: 'the exact same motorcycle in the exact same location and background, but now with aggressive black wing-shaped sport side mirrors mounted on the handlebars, photorealistic, high detail, 4k, professional photography, same lighting conditions, keep everything identical except add the mirrors',
+            strength: 0.55,
+            guidance: 3.5,
+            num_inference_steps: 28,
+            output_format: 'webp',
+            output_quality: 90
           }
         })
       });
