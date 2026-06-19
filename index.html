@@ -221,22 +221,36 @@
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   .call-btn {
-    width: 72px;
-    height: 72px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: #16a34a;
-    border: none;
+    border: 4px solid #22c55e;
     cursor: pointer;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     transition: transform 0.1s, background 0.2s;
-    animation: ring 0.6s infinite alternate;
+    animation: ring 0.5s infinite alternate;
+    box-shadow: 0 0 0 0 rgba(34,197,94,0.6);
   }
-  .call-btn:active { transform: scale(0.95); background: #15803d; }
-  @keyframes ring { from{transform:scale(1)} to{transform:scale(1.06)} }
+  .call-btn:active { transform: scale(0.93); background: #15803d; }
+  @keyframes ring {
+    from { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+    to   { transform: scale(1.08); box-shadow: 0 0 0 14px rgba(34,197,94,0); }
+  }
 
-  .call-btn svg { width: 32px; height: 32px; fill: #fff; }
+  .call-btn svg { width: 36px; height: 36px; fill: #fff; }
+  .call-btn-label {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: 'Georgia', serif;
+  }
 
   /* ===== SCREEN 4 — EN LLAMADA ===== */
   #s4 {
@@ -998,16 +1012,17 @@
     <div class="call-corner bl"></div>
     <div class="call-corner br"></div>
   </div>
-  <div class="content" style="height:100dvh; justify-content:center; padding-top:4rem;">
-    <div class="brand" style="margin-bottom:3rem;">W W R &nbsp; M O T O R S</div>
-    <div class="avatar-circle">
+  <div class="content" style="height:100dvh; justify-content:center; padding-top:4rem; gap:0;">
+    <div class="brand" style="margin-bottom:2.5rem;">W W R &nbsp; M O T O R S</div>
+    <div class="avatar-circle" style="width:120px;height:120px;margin-bottom:1.5rem;">
       <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="El Piloto" onerror="this.style.background='#333'">
     </div>
-    <div class="caller-handle">@wwrmotors_oficial</div>
-    <div class="caller-name">El &nbsp; P I L O T O</div>
-    <div class="incoming-label">L L A M A D A &nbsp; E N T R A N T E . . .</div>
+    <div class="caller-handle" style="font-size:24px; margin-bottom:0.4rem;">@wwrmotors_oficial</div>
+    <div class="caller-name" style="margin-bottom:0.5rem;">E L &nbsp; P I L O T O</div>
+    <div class="incoming-label" style="margin-bottom:3rem;">L L A M A D A &nbsp; E N T R A N T E . . .</div>
     <button class="call-btn" onclick="goTo(4)" aria-label="Contestar llamada">
       <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+      <div class="call-btn-label">CONTESTAR</div>
     </button>
   </div>
 </div>
@@ -1041,7 +1056,19 @@
     <div class="wave-bar" style="height:8px"></div>
   </div>
   <div class="call-timer" id="callTimer">00:01</div>
-  <button class="btn-continuar" onclick="goTo(5)" style="margin-top:3rem; max-width:280px;">CONTINUAR →</button>
+  <div id="callSubtitle" style="
+    max-width:300px;
+    text-align:center;
+    font-size:14px;
+    line-height:1.7;
+    color:rgba(255,255,255,0.6);
+    font-family:'Georgia',serif;
+    font-style:italic;
+    margin-top:1.5rem;
+    min-height:60px;
+    transition: opacity 0.5s;
+    opacity:0;
+  "></div>
 </div>
 
 <!-- ===== SCREEN 5: VERIFICACION ===== -->
@@ -1302,7 +1329,7 @@
     currentScreen = n;
     updateProgress(n);
 
-    if (n === 4) startCallSequence();
+    if (n === 4) { stopVibration(); startCallSequence(); }
     if (n === 3) startVibration();
     if (n === 6) startWaSequence();
     if (n === 7) setLockTime();
@@ -1323,32 +1350,21 @@
   function startVibration() {
     // Vibración del dispositivo si está disponible
     if (navigator.vibrate) {
-      const pattern = [300, 200, 300, 200, 300, 200, 300, 200, 300, 200, 300];
+      // Patrón: vibra 600ms, pausa 300ms, repite 6 veces
+      const pattern = [];
+      for (let i = 0; i < 8; i++) { pattern.push(600, 300); }
       navigator.vibrate(pattern);
     }
-    // Sonido de vibración con Web Audio API
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      function buzz(start) {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = 'square';
-        osc.frequency.value = 80;
-        gain.gain.setValueAtTime(0.3, ctx.currentTime + start);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + 0.25);
-        osc.start(ctx.currentTime + start);
-        osc.stop(ctx.currentTime + start + 0.3);
-      }
-      // Patrón de vibración: buz buz buz ...
-      [0, 0.5, 1.0, 1.5, 2.0, 2.5].forEach(t => buzz(t));
-    } catch(e) {}
+  }
+
+  function stopVibration() {
+    if (navigator.vibrate) navigator.vibrate(0);
   }
 
   function startCallSequence() {
     const status = document.getElementById('callStatus');
     const timer = document.getElementById('callTimer');
+    const subtitle = document.getElementById('callSubtitle');
     let secs = 1;
     status.textContent = 'CONECTANDO...';
     setTimeout(() => { status.textContent = 'EN LLAMADA'; }, 1200);
@@ -1358,6 +1374,28 @@
       const s = String(secs % 60).padStart(2,'0');
       timer.textContent = m + ':' + s;
     }, 1000);
+
+    // Subtítulos animados que simulan lo que dice el piloto
+    const lines = [
+      { t: 1800, text: '"Qué más, hermano... te llamo porque quiero mostrarte algo."' },
+      { t: 4000, text: '"Esos espejos que estás viendo... le cambian la cara a cualquier moto."' },
+      { t: 7000, text: '"Y pronto vas a poder ver exactamente cómo quedan en la tuya."' },
+    ];
+    lines.forEach(({ t, text }) => {
+      setTimeout(() => {
+        subtitle.style.opacity = '0';
+        setTimeout(() => {
+          subtitle.textContent = text;
+          subtitle.style.opacity = '1';
+        }, 300);
+      }, t);
+    });
+
+    // Auto-avanzar a S5 después de 11 segundos
+    setTimeout(() => {
+      clearInterval(callInterval);
+      goTo(5);
+    }, 11000);
   }
 
   const waAudios = [
