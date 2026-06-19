@@ -1374,19 +1374,20 @@
   function startCallSequence() {
     const status = document.getElementById('callStatus');
     const timer = document.getElementById('callTimer');
-        let secs = 1;
+    let secs = 1;
     status.textContent = 'CONECTANDO...';
 
-    // Audio de la llamada
-    const callAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/audio%20llamada.mp3');
-    callAudio.volume = 1.0;
-    setTimeout(() => {
-      status.textContent = 'EN LLAMADA';
-      callAudio.play().catch(e => console.log('Audio bloqueado:', e));
-    }, 1200);
+    // Timer del contador
+    callInterval = setInterval(() => {
+      secs++;
+      const m = String(Math.floor(secs/60)).padStart(2,'0');
+      const s = String(secs % 60).padStart(2,'0');
+      timer.textContent = m + ':' + s;
+    }, 1000);
 
-    // Mostrar botón exactamente a los 25 segundos
+    // Mostrar botón continuar
     const showBtn = () => {
+      clearInterval(callInterval);
       const btn = document.getElementById('btnContinuar');
       if (btn) {
         btn.style.opacity = '1';
@@ -1394,17 +1395,27 @@
       }
     };
 
-    callAudio.addEventListener('ended', showBtn);
-    setTimeout(showBtn, 25000);
-
-    // Parar audio cuando salga de la pantalla
+    // Audio de la llamada
+    const callAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/audio%20llamada.mp3');
+    callAudio.volume = 1.0;
     window._callAudio = callAudio;
-    callInterval = setInterval(() => {
-      secs++;
-      const m = String(Math.floor(secs/60)).padStart(2,'0');
-      const s = String(secs % 60).padStart(2,'0');
-      timer.textContent = m + ':' + s;
-    }, 1000);
+
+    setTimeout(() => {
+      status.textContent = 'EN LLAMADA';
+      callAudio.play()
+        .then(() => {
+          // Audio reproduciéndose - esperar que termine
+          callAudio.addEventListener('ended', showBtn);
+        })
+        .catch(e => {
+          // Audio bloqueado - mostrar botón a los 26 segundos
+          console.log('Audio bloqueado:', e);
+          setTimeout(showBtn, 26000);
+        });
+    }, 1200);
+
+    // Fallback absoluto a los 27 segundos
+    setTimeout(showBtn, 27000);
 
     // Subtítulos animados que simulan lo que dice el piloto
     const lines = [
