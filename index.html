@@ -1443,13 +1443,13 @@
   }
 
   const waAudios = [
-    { time: '07:09' },
-    { time: '07:10' },
-    { time: '07:10' },
-    { time: '07:11' },
+    { time: '07:09', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio1.mp3' },
+    { time: '07:10', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio2.mp3' },
+    { time: '07:10', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio3.mp3' },
+    { time: '07:11', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio4.mp3' },
   ];
 
-  function makeWaBubble(timeStr) {
+  function makeWaBubble(timeStr, audioUrl) {
     const div = document.createElement('div');
     div.className = 'wa-bubble';
     const heights = [24,18,32,14,28,20,36,16,22,30,12,26];
@@ -1457,13 +1457,22 @@
     for(let i=0;i<12;i++){
       bars += `<div class="wa-wave-bar" style="height:${heights[i]}px"></div>`;
     }
+    const audio = audioUrl ? new Audio(audioUrl) : null;
     div.innerHTML = `
-      <div class="wa-play-btn">
+      <div class="wa-play-btn" style="cursor:pointer;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)"><polygon points="5,3 19,12 5,21"/></svg>
       </div>
       <div class="wa-waveform">${bars}</div>
       <div class="wa-time">${timeStr}</div>
     `;
+    if (audio) {
+      div.querySelector('.wa-play-btn').addEventListener('click', () => {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log('Audio error:', e));
+      });
+      // Auto-reproducir cuando aparece la burbuja
+      setTimeout(() => audio.play().catch(e => console.log(e)), 300);
+    }
     return div;
   }
 
@@ -1482,7 +1491,7 @@
       setTimeout(() => {
         status.textContent = 'en línea';
         status.className = 'wa-status';
-        const bubble = makeWaBubble(waAudios[i].time);
+        const bubble = makeWaBubble(waAudios[i].time, waAudios[i].url);
         container.appendChild(bubble);
         setTimeout(() => bubble.classList.add('show'), 50);
         container.scrollTop = container.scrollHeight;
