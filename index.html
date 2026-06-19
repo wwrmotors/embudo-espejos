@@ -983,17 +983,8 @@
 
 <!-- ===== SCREEN 2: TENSION VISUAL ===== -->
 <div class="screen" id="s2">
-  <video id="videoS2" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" src="https://wwrmotorszonadeatraccion.b-cdn.net/video1.mp4" preload="auto" poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80" onerror="this.style.display='none'"></video>
+  <video id="videoS2" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" src="https://wwrmotorszonadeatraccion.b-cdn.net/videomain.mp4" preload="auto" poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80" onerror="this.style.display='none'"></video>
   <div class="bg-overlay" style="background:rgba(0,0,0,0.3)"></div>
-  <div class="content" style="height:100dvh;">
-    <div class="brand" style="margin-bottom:auto; margin-top:3rem;">W W R &nbsp; M O T O R S</div>
-  </div>
-</div>
-
-<!-- ===== SCREEN 2B: PILOTO CON CELULAR ===== -->
-<div class="screen" id="s2b">
-  <video id="videoS2b" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" src="https://wwrmotorszonadeatraccion.b-cdn.net/video2.mp4" preload="auto" onerror="this.style.display='none'"></video>
-  <div class="bg-overlay" style="background:rgba(0,0,0,0.25)"></div>
   <div class="content" style="height:100dvh;">
     <div class="brand" style="margin-bottom:auto; margin-top:3rem;">W W R &nbsp; M O T O R S</div>
   </div>
@@ -1433,22 +1424,9 @@
   window.goTo = function(n) {
     origGoTo(n);
     if (n === 2) {
-      // S2: video moto (7s) → S2b
-      setTimeout(() => {
-        const prev = document.getElementById('s' + currentScreen);
-        const next = document.getElementById('s2b');
-        if (!next) return;
-        prev.classList.remove('active');
-        prev.classList.add('exit');
-        setTimeout(() => prev.classList.remove('exit'), 900);
-        next.classList.add('active');
-        currentScreen = '2b';
-        // Reproducir video2 con sonido
-        const v = document.getElementById('videoS2b');
-        if (v) { v.muted = false; v.currentTime = 0; v.play(); }
-        // S2b: video piloto (8s) → S3
-        setTimeout(() => goTo(3), 8000);
-      }, 7000);
+      const v = document.getElementById('videoS2');
+      if (v) { v.muted = false; v.currentTime = 0; v.play(); }
+      setTimeout(() => goTo(3), 15000);
     }
   };
 
