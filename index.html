@@ -1641,7 +1641,7 @@
   }
 
   // ===== IA FOTO CON REPLICATE =====
-  const REPLICATE_TOKEN = ['r8_avbgEvY5t951c3Fru8IHg', 'jvZa4IKh2z2mZvee'].join('');
+  const REPLICATE_TOKEN = 'proxy'; // Token manejado por /api/replicate
   const ESPEJO_REF = 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-17%20at%2014.24.27.jpeg';
 
   let iaOriginalDataUrl = null;
@@ -1703,10 +1703,9 @@
 
       // PASO 2: Enviar a Replicate con multi-image-kontext-pro (3 referencias)
       if (statusEl) statusEl.textContent = 'Aplicando espejos...';
-      const startRes = await fetch('https://api.replicate.com/v1/predictions', {
+      const startRes = await fetch('/api/replicate', {
         method: 'POST',
         headers: {
-          'Authorization': 'Token ' + REPLICATE_TOKEN,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -1779,22 +1778,68 @@
     window.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX); }, {passive:true});
   }
 
-  function handleUpload(event) {
+  async function handleUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('uploadZone').style.display = 'none';
-      const result = document.getElementById('iaResult');
-      result.classList.add('show');
-      const img = document.getElementById('resultImg');
-      img.src = e.target.result;
-      setTimeout(() => {
-        document.getElementById('resultDone').style.display = 'block';
+
+    // Mostrar estado de carga
+    document.getElementById('uploadZone').style.display = 'none';
+    const result = document.getElementById('iaResult');
+    result.classList.add('show');
+    document.getElementById('resultDone').textContent = '⏳ PROCESANDO CON IA...';
+    document.getElementById('resultDone').style.display = 'block';
+    document.getElementById('resultImg').style.display = 'none';
+    document.getElementById('btnOferta').style.display = 'none';
+
+    // Convertir imagen a base64
+    const base64 = await new Promise((res) => {
+      const reader = new FileReader();
+      reader.onload = e => res(e.target.result);
+      reader.readAsDataURL(file);
+    });
+
+    try {
+      // Llamar a Replicate - FLUX Kontext
+      const response = await fetch('/api/replicate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64 })
+      });
+
+      const data = await response.json();
+      
+      // Esperar resultado si no llegó inmediato
+      let outputUrl = data.output;
+      if (!outputUrl && data.id) {
+        for (let i = 0; i < 30; i++) {
+          await new Promise(r => setTimeout(r, 2000));
+          const poll = await fetch('/api/replicate?id=' + data.id);
+          const pollData = await poll.json();
+          if (pollData.status === 'succeeded') { outputUrl = pollData.output; break; }
+          if (pollData.status === 'failed') throw new Error('IA falló');
+        }
+      }
+
+      if (outputUrl) {
+        const imgUrl = Array.isArray(outputUrl) ? outputUrl[0] : outputUrl;
+        const img = document.getElementById('resultImg');
+        img.src = imgUrl;
+        img.style.display = 'block';
+        document.getElementById('resultDone').textContent = '✓ ¡ASÍ QUEDARÍA TU MOTO!';
         document.getElementById('btnOferta').style.display = 'block';
-      }, 2500);
-    };
-    reader.readAsDataURL(file);
+      } else {
+        throw new Error('Sin resultado');
+      }
+
+    } catch(err) {
+      console.error('Error IA:', err);
+      // Fallback: mostrar foto original con mensaje
+      const img = document.getElementById('resultImg');
+      img.src = base64;
+      img.style.display = 'block';
+      document.getElementById('resultDone').textContent = '✓ Vista previa de tu moto';
+      document.getElementById('btnOferta').style.display = 'block';
+    }
   }
 
   // Auto-advance screen 2 after 3s
