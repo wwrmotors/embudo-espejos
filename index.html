@@ -1701,7 +1701,7 @@
       if (!imgbbData.success) throw new Error('Error subiendo imagen a imgBB');
       const imageUrl = imgbbData.data.url;
 
-      // PASO 2: Enviar URL pública a Replicate con flux-dev img2img
+      // PASO 2: Enviar a Replicate con multi-image-kontext-pro (3 referencias)
       if (statusEl) statusEl.textContent = 'Aplicando espejos...';
       const startRes = await fetch('https://api.replicate.com/v1/predictions', {
         method: 'POST',
@@ -1710,15 +1710,15 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'black-forest-labs/flux-dev',
+          model: 'flux-kontext-apps/multi-image-kontext-pro',
           input: {
-            image: imageUrl,
-            prompt: 'the exact same motorcycle in the exact same location and background, but now with aggressive black wing-shaped sport side mirrors mounted on the handlebars, photorealistic, high detail, 4k, professional photography, same lighting conditions, keep everything identical except add the mirrors',
-            strength: 0.55,
-            guidance: 3.5,
-            num_inference_steps: 28,
-            output_format: 'webp',
-            output_quality: 90
+            input_image_1: 'https://wwrmotorszonadeatraccion.b-cdn.net/%231%20Mas%20vendido.png',
+            input_image_2: 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-17%20at%2014.24.27.jpeg',
+            input_image_3: 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-18%20at%2022.01.52%20(1).jpeg',
+            input_image_4: imageUrl,
+            prompt: `The uploaded image (image 4) is a customer's motorcycle. Images 1, 2 and 3 are reference photos showing the exact mirrors to install. Your task is to install those mirrors onto the motorcycle in image 4. Use the reference images to reproduce the exact mirror design, shape, proportions, folding mechanism, mounting arm, texture and matte black finish. Instructions: detect the motorcycle handlebars. Install one mirror on the left side and one mirror on the right side. Position the mirrors exactly where real motorcycle mirrors would be mounted. Match the motorcycle perspective and camera angle. Match the lighting, shadows and reflections of the original photo. Maintain realistic scale relative to the handlebars. Keep the mirrors symmetrical. Preserve the customer's motorcycle exactly as photographed. Do not modify: motorcycle model, fuel tank, fairings, headlight, handlebars, wheels, suspension, exhaust, colors, stickers, background, environment, rider. Only add the provided mirrors to the motorcycle. The final image must look like a real photograph of the customer's motorcycle with the mirrors already installed. Photorealistic.`,
+            output_format: 'jpg',
+            output_quality: 95
           }
         })
       });
