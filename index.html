@@ -1056,19 +1056,7 @@
     <div class="wave-bar" style="height:8px"></div>
   </div>
   <div class="call-timer" id="callTimer">00:01</div>
-  <div id="callSubtitle" style="
-    max-width:300px;
-    text-align:center;
-    font-size:14px;
-    line-height:1.7;
-    color:rgba(255,255,255,0.6);
-    font-family:'Georgia',serif;
-    font-style:italic;
-    margin-top:1.5rem;
-    min-height:60px;
-    transition: opacity 0.5s;
-    opacity:0;
-  "></div>
+  
 </div>
 
 <!-- ===== SCREEN 5: VERIFICACION ===== -->
@@ -1386,8 +1374,7 @@
   function startCallSequence() {
     const status = document.getElementById('callStatus');
     const timer = document.getElementById('callTimer');
-    const subtitle = document.getElementById('callSubtitle');
-    let secs = 1;
+        let secs = 1;
     status.textContent = 'CONECTANDO...';
 
     // Audio de la llamada
@@ -1398,14 +1385,17 @@
       callAudio.play().catch(e => console.log('Audio bloqueado:', e));
     }, 1200);
 
-    // Mostrar botón continuar cuando termina el audio (23 segundos)
-    setTimeout(() => {
+    // Mostrar botón cuando termina el audio O a los 25 segundos máximo
+    const showBtn = () => {
       const btn = document.getElementById('btnContinuar');
       if (btn) {
         btn.style.opacity = '1';
         btn.style.pointerEvents = 'all';
       }
-    }, 23000);
+    };
+
+    callAudio.addEventListener('ended', showBtn);
+    setTimeout(showBtn, 25000); // fallback por si el audio falla
 
     // Parar audio cuando salga de la pantalla
     window._callAudio = callAudio;
@@ -1424,19 +1414,12 @@
     ];
     lines.forEach(({ t, text }) => {
       setTimeout(() => {
-        subtitle.style.opacity = '0';
         setTimeout(() => {
-          subtitle.textContent = text;
-          subtitle.style.opacity = '1';
         }, 300);
       }, t);
     });
 
-    // Auto-avanzar a S5 después de 11 segundos
-    setTimeout(() => {
-      clearInterval(callInterval);
-      goTo(5);
-    }, 11000);
+    // El avance lo controla el botón CONTINUAR que aparece cuando termina el audio
   }
 
   const waAudios = [
