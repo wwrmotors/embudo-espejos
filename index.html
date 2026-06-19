@@ -1222,51 +1222,6 @@
   </div>
 </div>
 
-<!-- ===== SCREEN 9: PAUSA METACOGNITIVA ===== -->
-<div class="screen" id="s9">
-  <div class="bg"></div>
-  <div class="bg-overlay" style="background:rgba(0,0,0,0.75)"></div>
-  <div class="content" style="height:100dvh; justify-content:center; padding-top:3rem;">
-    <div class="brand" style="margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
-    <div class="pausa-title">PAUSA.</div>
-    <div class="separator"></div>
-    <div class="pausa-sub">¿ T E &nbsp; D I S T E &nbsp; C U E N T A ?</div>
-    <div class="tiempo-box">
-      <div class="tiempo-label">TIEMPO EN PANTALLA</div>
-      <div class="tiempo-num" id="tiempoNum">3</div>
-      <div class="tiempo-min">MIN</div>
-      <div class="separator"></div>
-      <div class="tiempo-here">Q U E &nbsp; E S T Á S &nbsp; A Q U Í</div>
-    </div>
-    <div class="insight-box">
-      <strong>Ni te diste cuenta</strong> de que el tiempo pasó tan rápido.
-    </div>
-    <div class="insight-box">
-      ¿Recuerdas la <strong>última vez</strong> que estuviste tanto tiempo inmerso mirando un producto? <strong>Probablemente nunca.</strong>
-    </div>
-    <button class="btn-continuar" onclick="goTo(10)" style="max-width:360px; margin-top:1.5rem;">CONTINUAR →</button>
-  </div>
-</div>
-
-<!-- ===== SCREEN 10: NADIE COMPRA ===== -->
-<div class="screen" id="s10">
-  <div class="bg"></div>
-  <div class="bg-overlay" style="background:rgba(0,0,0,0.85)"></div>
-  <div class="content" style="height:100dvh; justify-content:space-between; padding-top:4rem; padding-bottom:4rem;">
-    <div class="brand">W W R &nbsp; M O T O R S</div>
-    <div>
-      <div style="font-size:11px; letter-spacing:4px; color:rgba(255,255,255,0.3); margin-bottom:1rem;">A &nbsp; F I L M &nbsp; B Y &nbsp; W W R</div>
-      <div class="nadie-compra">NADIE</div>
-      <div class="nadie-compra" style="color:#ff4422; font-style:italic;">COMPRA.</div>
-      <div class="separator" style="margin:0.75rem 0;"></div>
-      <div class="nadie-sub">SOLO &nbsp; VE &nbsp; CÓMO &nbsp; QUEDA &nbsp; SU &nbsp; MOTO.</div>
-    </div>
-    <div class="desliza" onclick="goTo(11)">
-      D E S L I Z A<br>↓
-    </div>
-  </div>
-</div>
-
 <!-- ===== SCREEN 11: IA FOTO ===== -->
 <div class="screen" id="s11">
   <div class="bg"></div>
@@ -1365,12 +1320,12 @@
         v.loop = false;
         v.currentTime = 0;
         v.play().catch(e => console.log(e));
-        v.onended = () => { ttStopLikes(); goTo(9); };
+        v.onended = () => { ttStopLikes(); goTo(11); };
       }
       ttStartLikes();
     }
     if (n !== 8) ttStopLikes();
-    if (n === 9) updateTiempo();
+
   }
 
   function selectOption(btn, isCorrect) {
