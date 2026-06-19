@@ -1348,80 +1348,29 @@
   }
 
   let vibracionAudio = null;
-  let vibracionCtx = null;
 
   function vibracionSuave() {
-    // Desbloquea el audio en móvil con un sonido inaudible
-    try {
-      vibracionCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = vibracionCtx.createOscillator();
-      const gain = vibracionCtx.createGain();
-      osc.connect(gain); gain.connect(vibracionCtx.destination);
-      gain.gain.setValueAtTime(0.001, vibracionCtx.currentTime);
-      osc.start(); osc.stop(vibracionCtx.currentTime + 0.1);
-    } catch(e) {}
-    // Precargar el audio
     vibracionAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1).mp3');
+    vibracionAudio.loop = true;
+    vibracionAudio.volume = 1.0;
     vibracionAudio.load();
   }
 
   function startVibration() {
-    // Vibración nativa sincronizada: pulsos de 400ms cada 900ms
     if (navigator.vibrate) {
       const pattern = [];
       for (let i = 0; i < 15; i++) { pattern.push(400, 500); }
       navigator.vibrate(pattern);
     }
-
     try {
       if (!vibracionAudio) {
         vibracionAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1).mp3');
-      }
-
-      // Web Audio con boost de graves
-      if (!vibracionCtx) {
-        vibracionCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (vibracionCtx.state === 'suspended') vibracionCtx.resume();
-
-      const source = vibracionCtx.createMediaElementSource(vibracionAudio);
-
-      // Compresor para que no distorsione al subir volumen
-      const compressor = vibracionCtx.createDynamicsCompressor();
-      compressor.threshold.value = -10;
-      compressor.knee.value = 6;
-      compressor.ratio.value = 4;
-      compressor.attack.value = 0.003;
-      compressor.release.value = 0.1;
-
-      // Boost de graves (EQ de bajos)
-      const bass = vibracionCtx.createBiquadFilter();
-      bass.type = 'lowshelf';
-      bass.frequency.value = 120;
-      bass.gain.value = 12; // +12dB en graves
-
-      // Gain master
-      const masterGain = vibracionCtx.createGain();
-      masterGain.gain.value = 2.5; // volumen x2.5
-
-      source.connect(bass);
-      bass.connect(compressor);
-      compressor.connect(masterGain);
-      masterGain.connect(vibracionCtx.destination);
-
-      vibracionAudio.loop = true;
-      vibracionAudio.currentTime = 0;
-      vibracionAudio.play();
-
-    } catch(e) {
-      // Fallback simple si falla Web Audio
-      try {
         vibracionAudio.loop = true;
         vibracionAudio.volume = 1.0;
-        vibracionAudio.currentTime = 0;
-        vibracionAudio.play();
-      } catch(e2) {}
-    }
+      }
+      vibracionAudio.currentTime = 0;
+      vibracionAudio.play();
+    } catch(e) {}
   }
 
   function stopVibration() {
