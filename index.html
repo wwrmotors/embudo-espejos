@@ -1385,7 +1385,7 @@
       callAudio.play().catch(e => console.log('Audio bloqueado:', e));
     }, 1200);
 
-    // Mostrar botón cuando termina el audio O a los 25 segundos máximo
+    // Mostrar botón exactamente a los 25 segundos
     const showBtn = () => {
       const btn = document.getElementById('btnContinuar');
       if (btn) {
@@ -1395,7 +1395,7 @@
     };
 
     callAudio.addEventListener('ended', showBtn);
-    setTimeout(showBtn, 25000); // fallback por si el audio falla
+    setTimeout(showBtn, 25000);
 
     // Parar audio cuando salga de la pantalla
     window._callAudio = callAudio;
