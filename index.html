@@ -775,6 +775,7 @@
     padding-bottom: 3rem;
   }
   @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ===== SCREEN 11 — IA FOTO ===== */
   #s11 .bg {
@@ -1119,24 +1120,46 @@
   </div>
 </div>
 
-<!-- ===== SCREEN 7: PANTALLA BLOQUEO ===== -->
+<!-- ===== SCREEN 7: TRANSICIÓN VIDEO ===== -->
 <div class="screen" id="s7">
-  <div class="bg"></div>
-  <div class="bg-overlay" style="background:rgba(0,0,0,0.4)"></div>
-  <div class="content" style="height:100dvh; justify-content:center; gap:0;">
-    <div class="lock-time" id="lockDate">JUEVES, 18 DE JUNIO</div>
-    <div class="lock-hour" id="lockHour">07:09</div>
-    <div class="notif-card" onclick="goTo(8)">
-      <div class="notif-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.195 2.105 3.195 5.1 4.485.714.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345z"/><path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.4z"/></svg>
+  <div style="position:absolute;inset:0;background:#000;z-index:0;"></div>
+  <div class="content" style="height:100dvh; justify-content:center; gap:0; align-items:center;">
+
+    <!-- Spinner de carga -->
+    <div id="s7Spinner" style="display:flex; flex-direction:column; align-items:center; gap:1.5rem; margin-bottom:3rem;">
+      <div style="
+        width:56px; height:56px;
+        border:2px solid rgba(255,255,255,0.1);
+        border-top:2px solid #ff4422;
+        border-radius:50%;
+        animation:spin 0.9s linear infinite;
+      "></div>
+      <div style="font-size:11px; letter-spacing:5px; color:rgba(255,255,255,0.4); text-transform:uppercase;">
+        Cargando video...
       </div>
-      <div class="notif-text">
-        <div class="notif-app">WHATSAPP &nbsp;·&nbsp; AHORA</div>
-        <div class="notif-sender">Agente WWR</div>
-        <div class="notif-msg">🎤 Mensaje de audio</div>
-      </div>
-      <div class="notif-time">›</div>
     </div>
+
+    <!-- Botón que aparece tras 2s -->
+    <button id="s7Btn" onclick="goTo(8)" style="
+      display:none;
+      width:100%; max-width:360px;
+      padding:18px 24px;
+      background:#cc2200;
+      color:#fff;
+      border:none;
+      font-family:'Georgia',serif;
+      font-size:13px;
+      letter-spacing:4px;
+      text-transform:uppercase;
+      cursor:pointer;
+      justify-content:space-between;
+      align-items:center;
+      transition:background 0.2s;
+    ">
+      <span>CONTINUAR VIENDO</span>
+      <span>▶</span>
+    </button>
+
   </div>
 </div>
 
@@ -1532,13 +1555,15 @@
   }
 
   function setLockTime() {
-    const now = new Date();
-    const days = ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
-    const months = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-    document.getElementById('lockDate').textContent = days[now.getDay()] + ', ' + now.getDate() + ' DE ' + months[now.getMonth()];
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('lockHour').textContent = h + ':' + m;
+    // Pantalla de transición: spinner 2s, luego aparece botón
+    const spinner = document.getElementById('s7Spinner');
+    const btn = document.getElementById('s7Btn');
+    if (spinner) spinner.style.display = 'flex';
+    if (btn) btn.style.display = 'none';
+    setTimeout(() => {
+      if (spinner) spinner.style.display = 'none';
+      if (btn) { btn.style.display = 'flex'; }
+    }, 2000);
   }
 
   function updateTiempo() {
