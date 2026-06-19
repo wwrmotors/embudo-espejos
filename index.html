@@ -1028,24 +1028,19 @@
 </div>
 
 <!-- ===== SCREEN 4: EN LLAMADA ===== -->
-<div class="screen" id="s4">
-  <div class="call-frame">
-    <div class="call-corner tl"></div>
-    <div class="call-corner tr"></div>
-    <div class="call-corner bl"></div>
-    <div class="call-corner br"></div>
-  </div>
-  <div class="call-active-header">
-    <div class="call-avatar-small">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="El Piloto" onerror="this.style.background='#333'">
+<div class="screen" id="s4" style="background:#080808; flex-direction:column; align-items:center; justify-content:center;">
+  <div style="position:absolute; top:0; left:0; right:0; padding:3rem 1.5rem 1rem; display:flex; align-items:center; gap:12px; background:rgba(0,0,0,0.5);">
+    <div style="width:44px; height:44px; border-radius:50%; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.background='#333'">
     </div>
-    <div class="call-info">
-      <div class="call-info-name">@wwrmotors_oficial</div>
-      <div class="call-info-status" id="callStatus">CONECTANDO...</div>
+    <div style="flex:1;">
+      <div style="font-size:15px; font-weight:600;">@wwrmotors_oficial</div>
+      <div id="callStatus" style="font-size:11px; color:#4ade80; letter-spacing:2px;">CONECTANDO...</div>
     </div>
-    <div class="brand">W W R</div>
+    <div style="font-size:10px; letter-spacing:3px; color:rgba(255,255,255,0.2);">W W R</div>
   </div>
-  <div class="waveform" id="waveform">
+
+  <div style="display:flex; align-items:center; gap:4px; margin-bottom:1rem;">
     <div class="wave-bar" style="height:8px"></div>
     <div class="wave-bar" style="height:8px"></div>
     <div class="wave-bar" style="height:8px"></div>
@@ -1055,8 +1050,23 @@
     <div class="wave-bar" style="height:8px"></div>
     <div class="wave-bar" style="height:8px"></div>
   </div>
-  <div class="call-timer" id="callTimer">00:01</div>
-  
+
+  <div id="callTimer" style="font-size:13px; letter-spacing:3px; color:#4ade80; margin-bottom:2rem;">00:01</div>
+
+  <button id="btnContinuar" onclick="goTo(5)" style="
+    display:none;
+    padding:18px 40px;
+    background:#cc2200;
+    color:#fff;
+    border:none;
+    font-family:'Georgia',serif;
+    font-size:13px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    cursor:pointer;
+    width:280px;
+  ">CONTINUAR →</button>
+
 </div>
 
 <!-- ===== SCREEN 5: VERIFICACION ===== -->
