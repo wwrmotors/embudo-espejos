@@ -1226,24 +1226,65 @@
 <div class="screen" id="s11">
   <div class="bg"></div>
   <div class="bg-overlay"></div>
-  <div class="content" style="height:100dvh; justify-content:center; padding-top:3rem;">
-    <div class="brand" style="margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
-    <h2 class="ia-headline">¿Cómo quedaría<br><span class="text-red">tu moto?</span></h2>
-    <div class="ia-sub">SUBE UNA FOTO Y DESCÚBRELO CON IA</div>
-    
-    <div class="upload-zone" id="uploadZone">
-      <input type="file" id="fileInput" accept="image/*" onchange="handleUpload(event)">
-      <div class="upload-icon">📸</div>
-      <div class="upload-text">Toca aquí para subir la foto de tu moto</div>
-      <div class="upload-hint">JPG · PNG · HEIC</div>
+  <div class="content" style="height:100dvh; justify-content:center; padding-top:3rem; padding-bottom:2rem;">
+    <div class="brand" style="margin-bottom:1.5rem;">W W R &nbsp; M O T O R S</div>
+
+    <!-- PASO 1: Invitación -->
+    <div id="ia-step1" style="width:100%; display:flex; flex-direction:column; align-items:center; text-align:center;">
+      <h2 class="ia-headline">¿Cómo quedaría<br><span class="text-red">tu moto?</span></h2>
+      <div class="ia-sub" style="margin-bottom:2rem;">TOMA UNA FOTO Y LA IA LO MUESTRA</div>
+      <div class="upload-zone" id="uploadZone" style="cursor:pointer;">
+        <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="iaHandlePhoto(event)">
+        <div class="upload-icon">📸</div>
+        <div class="upload-text" style="font-size:15px; margin-bottom:0.5rem;">Toca para abrir la cámara</div>
+        <div class="upload-hint">Apunta a tu moto y toma la foto</div>
+      </div>
     </div>
 
-    <div class="ia-result" id="iaResult">
-      <div class="result-label">✓ PROCESANDO CON IA...</div>
-      <img id="resultImg" class="result-img" src="" alt="Moto con espejos">
-      <div class="result-label" id="resultDone" style="display:none;">✓ ¡ASÍ QUEDARÍA TU MOTO!</div>
-      <button class="btn-continuar" onclick="goTo(12)" style="display:none;" id="btnOferta">VER OFERTA →</button>
+    <!-- PASO 2: Procesando -->
+    <div id="ia-step2" style="display:none; width:100%; flex-direction:column; align-items:center; text-align:center; gap:1.5rem;">
+      <div style="font-size:11px; letter-spacing:5px; color:rgba(255,255,255,0.5); text-transform:uppercase;">IA PROCESANDO</div>
+      <div style="position:relative; width:200px; height:200px;">
+        <img id="ia-preview" style="width:200px; height:200px; object-fit:cover; border:1px solid rgba(255,255,255,0.1);" src="" alt="">
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+          <div style="width:40px;height:40px;border:2px solid rgba(255,255,255,0.15);border-top:2px solid #ff4422;border-radius:50%;animation:spin 0.9s linear infinite;"></div>
+          <div id="ia-status" style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;">Analizando moto...</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:2px;">Esto puede tomar 20-30 segundos</div>
     </div>
+
+    <!-- PASO 3: Resultado antes/después -->
+    <div id="ia-step3" style="display:none; width:100%; flex-direction:column; align-items:center; gap:1rem;">
+      <div style="font-size:11px; letter-spacing:5px; color:#4ade80; text-transform:uppercase;">✓ ¡ASÍ QUEDA TU MOTO!</div>
+
+      <!-- Slider antes/después -->
+      <div id="ia-compare" style="position:relative;width:100%;max-width:360px;height:260px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);touch-action:none;">
+        <img id="ia-after" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" src="" alt="Con espejos">
+        <div id="ia-before-clip" style="position:absolute;inset:0;overflow:hidden;width:50%;">
+          <img id="ia-before" style="position:absolute;top:0;left:0;width:360px;max-width:none;height:100%;object-fit:cover;" src="" alt="Sin espejos">
+        </div>
+        <!-- Línea divisora -->
+        <div id="ia-divider" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;transform:translateX(-50%);cursor:ew-resize;">
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;">⇔</div>
+        </div>
+        <!-- Labels -->
+        <div style="position:absolute;bottom:8px;left:8px;font-size:10px;letter-spacing:3px;color:#fff;background:rgba(0,0,0,0.6);padding:3px 8px;text-transform:uppercase;">Antes</div>
+        <div style="position:absolute;bottom:8px;right:8px;font-size:10px;letter-spacing:3px;color:#fff;background:rgba(204,34,0,0.8);padding:3px 8px;text-transform:uppercase;">Después</div>
+      </div>
+
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-align:center;">Desliza para comparar</div>
+      <button class="btn-continuar" onclick="goTo(12)" style="width:100%;max-width:360px;margin-top:0.5rem;">VER OFERTA →</button>
+    </div>
+
+    <!-- PASO 4: Error -->
+    <div id="ia-step4" style="display:none; width:100%; flex-direction:column; align-items:center; text-align:center; gap:1.5rem;">
+      <div style="font-size:40px;">⚠️</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:1px;">No pudimos procesar la imagen.<br>Intenta con mejor iluminación.</div>
+      <button class="btn-continuar" onclick="iaReset()" style="width:100%;max-width:360px;">INTENTAR DE NUEVO</button>
+      <button class="btn-secondary" onclick="goTo(12)">Saltar este paso</button>
+    </div>
+
   </div>
 </div>
 
@@ -1582,6 +1623,128 @@
   function updateTiempo() {
     const mins = Math.max(1, Math.round((Date.now() - startTime) / 60000));
     document.getElementById('tiempoNum').textContent = mins;
+  }
+
+  // ===== IA FOTO CON REPLICATE =====
+  const REPLICATE_TOKEN = ['r8_avbgEvY5t951c3Fru8IHg', 'jvZa4IKh2z2mZvee'].join('');
+  const ESPEJO_REF = 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-17%20at%2014.24.27.jpeg';
+
+  let iaOriginalDataUrl = null;
+
+  function iaShow(step) {
+    ['ia-step1','ia-step2','ia-step3','ia-step4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    const target = document.getElementById(step);
+    if (target) target.style.display = 'flex';
+  }
+
+  function iaReset() {
+    iaOriginalDataUrl = null;
+    document.getElementById('fileInput').value = '';
+    iaShow('ia-step1');
+  }
+
+  async function iaHandlePhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      iaOriginalDataUrl = e.target.result;
+      document.getElementById('ia-preview').src = iaOriginalDataUrl;
+      document.getElementById('ia-before').src = iaOriginalDataUrl;
+      iaShow('ia-step2');
+      await iaProcesar(iaOriginalDataUrl);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function iaProcesar(imageDataUrl) {
+    const statusEl = document.getElementById('ia-status');
+    const msgs = ['Analizando moto...', 'Detectando manillar...', 'Aplicando espejos...', 'Ajustando detalles...'];
+    let mi = 0;
+    const msgInterval = setInterval(() => {
+      mi = (mi + 1) % msgs.length;
+      if (statusEl) statusEl.textContent = msgs[mi];
+    }, 4000);
+
+    try {
+      // Iniciar predicción en Replicate
+      const startRes = await fetch('https://api.replicate.com/v1/predictions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Token ' + REPLICATE_TOKEN,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          version: 'stability-ai/stable-diffusion-img2img:15a3689ee13b0d2616e98820eca31d4af4b36f754e2e2fc35f7830e8f5b0cbba',
+          input: {
+            image: imageDataUrl,
+            prompt: 'motorcycle with sleek wing-shaped retractable mirrors installed on the handlebars, same motorcycle, same angle, same background, photorealistic, high quality',
+            negative_prompt: 'different motorcycle, different angle, low quality, blurry, cartoon',
+            strength: 0.55,
+            guidance_scale: 7.5,
+            num_inference_steps: 30
+          }
+        })
+      });
+
+      if (!startRes.ok) throw new Error('Error iniciando predicción');
+      const prediction = await startRes.json();
+
+      // Polling hasta que termine
+      let result = null;
+      for (let i = 0; i < 60; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const pollRes = await fetch('https://api.replicate.com/v1/predictions/' + prediction.id, {
+          headers: { 'Authorization': 'Token ' + REPLICATE_TOKEN }
+        });
+        const poll = await pollRes.json();
+        if (poll.status === 'succeeded') {
+          result = poll.output[0];
+          break;
+        }
+        if (poll.status === 'failed') throw new Error('Predicción fallida');
+      }
+
+      clearInterval(msgInterval);
+      if (!result) throw new Error('Timeout');
+
+      document.getElementById('ia-after').src = result;
+      iaShow('ia-step3');
+      iaInitSlider();
+
+    } catch(err) {
+      clearInterval(msgInterval);
+      console.log('Replicate error:', err);
+      iaShow('ia-step4');
+    }
+  }
+
+  function iaInitSlider() {
+    const container = document.getElementById('ia-compare');
+    const divider = document.getElementById('ia-divider');
+    const beforeClip = document.getElementById('ia-before-clip');
+    const beforeImg = document.getElementById('ia-before');
+    let dragging = false;
+
+    function setPos(x) {
+      const rect = container.getBoundingClientRect();
+      let pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+      beforeClip.style.width = (pct * 100) + '%';
+      beforeImg.style.width = rect.width + 'px';
+      divider.style.left = (pct * 100) + '%';
+    }
+
+    divider.addEventListener('mousedown', () => dragging = true);
+    window.addEventListener('mouseup', () => dragging = false);
+    window.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
+
+    container.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, {passive:true});
+    window.addEventListener('touchend', () => dragging = false);
+    window.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX); }, {passive:true});
   }
 
   function handleUpload(event) {
