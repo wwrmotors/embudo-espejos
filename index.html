@@ -1703,14 +1703,13 @@
 
       // PASO 2: Enviar a Replicate con multi-image-kontext-pro (3 referencias)
       if (statusEl) statusEl.textContent = 'Aplicando espejos...';
-      const startRes = await fetch('/api/replicate', {
+      const startRes = await fetch('https://api.replicate.com/v1/predictions', {
         method: 'POST',
         headers: {
           'Authorization': 'Token ' + REPLICATE_TOKEN,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'flux-kontext-apps/multi-image-kontext-pro',
           input: {
             input_image_1: 'https://wwrmotorszonadeatraccion.b-cdn.net/%231%20Mas%20vendido.png',
             input_image_2: 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-17%20at%2014.24.27.jpeg',
@@ -1726,23 +1725,19 @@
       if (!startRes.ok) throw new Error('Error iniciando predicción');
       const prediction = await startRes.json();
 
-      // PASO 3: Polling a través del proxy
+      // PASO 3: Polling hasta que termine
       let result = null;
-
-      // Si ya llegó el resultado directo
-      if (prediction.output) {
-        result = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-      } else if (prediction.id) {
-        for (let i = 0; i < 60; i++) {
-          await new Promise(r => setTimeout(r, 2000));
-          const pollRes = await fetch('/api/replicate?id=' + prediction.id);
-          const poll = await pollRes.json();
-          if (poll.status === 'succeeded') {
-            result = Array.isArray(poll.output) ? poll.output[0] : poll.output;
-            break;
-          }
-          if (poll.status === 'failed') throw new Error('Predicción fallida');
+      for (let i = 0; i < 60; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const pollRes = await fetch('https://api.replicate.com/v1/predictions/' + prediction.id, {
+          headers: { 'Authorization': 'Token ' + REPLICATE_TOKEN }
+        });
+        const poll = await pollRes.json();
+        if (poll.status === 'succeeded') {
+          result = Array.isArray(poll.output) ? poll.output[0] : poll.output;
+          break;
         }
+        if (poll.status === 'failed') throw new Error('Predicción fallida');
       }
 
       clearInterval(msgInterval);
