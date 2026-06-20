@@ -1703,7 +1703,7 @@
 
       // PASO 2: Enviar a Replicate con multi-image-kontext-pro (3 referencias)
       if (statusEl) statusEl.textContent = 'Aplicando espejos...';
-      const startRes = await fetch('https://api.replicate.com/v1/predictions', {
+      const startRes = await fetch('/api/replicate', {
         method: 'POST',
         headers: {
           
@@ -1730,7 +1730,7 @@
       let result = null;
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
-        const pollRes = await fetch('https://api.replicate.com/v1/predictions/' + prediction.id, {
+        const pollRes = await fetch('/api/replicate/' + prediction.id, {
           headers: { 'Authorization': 'Token ' + REPLICATE_TOKEN }
         });
         const poll = await pollRes.json();
