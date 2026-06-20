@@ -163,6 +163,21 @@
     goTo(4); // siguiente pantalla
   }
 
+
+  // S4: video despues de contestar
+  const _origGoTo = goTo;
+  goTo = function(n) {
+    _origGoTo(n);
+    if (n === 4) {
+      const v = document.getElementById('video2');
+      if (v) {
+        v.muted = false;
+        v.currentTime = 0;
+        v.play().catch(() => { v.muted = true; v.play(); });
+      }
+    }
+  };
+
 </script>
 
 <!-- ===== S3: LLAMADA ENTRANTE ===== -->
@@ -226,6 +241,14 @@
     to{transform:scale(1.08);box-shadow:0 0 0 14px rgba(34,197,94,0);}
   }
 </style>
+
+
+<!-- ===== S4: VIDEO DESPUÉS DE CONTESTAR ===== -->
+<div class="screen" id="s4">
+  <video class="bg-video" id="video2" playsinline
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20despues%20de%20boton%20de%20llamada.mp4"
+    onerror="this.style.display='none'"></video>
+</div>
 
 </body>
 </html>
