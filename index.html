@@ -128,8 +128,104 @@
       v.muted = false;
       v.currentTime = 0;
       v.play().catch(() => { v.muted = true; v.play(); });
+      // Cuando termina el video pasa a llamada
+      v.addEventListener('ended', () => {
+        startVibration();
+        goTo(3);
+      }, { once: true });
     }
+    if (n === 3) startVibration();
   }
+
+  let vibAudio = null;
+
+  function startVibration() {
+    if (navigator.vibrate) {
+      const pat = [];
+      for(let i=0;i<30;i++) pat.push(400,500);
+      navigator.vibrate(pat);
+    }
+    try {
+      vibAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
+      vibAudio.loop = true;
+      vibAudio.volume = 1.0;
+      vibAudio.play().catch(()=>{});
+    } catch(e){}
+  }
+
+  function stopVibration() {
+    if (navigator.vibrate) navigator.vibrate(0);
+    if (vibAudio) { vibAudio.pause(); vibAudio.currentTime = 0; }
+  }
+
+  function contestar() {
+    stopVibration();
+    goTo(4); // siguiente pantalla
+  }
+
 </script>
+
+<!-- ===== S3: LLAMADA ENTRANTE ===== -->
+<div class="screen" id="s3">
+  <div style="position:absolute;inset:0;background:url('https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg') center/cover no-repeat;z-index:0;"></div>
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.65);z-index:1;"></div>
+
+  <!-- Marco tipo WhatsApp -->
+  <div style="position:absolute;inset:8px;border:1px solid rgba(255,255,255,0.08);z-index:2;pointer-events:none;">
+    <div style="position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.3);"></div>
+    <div style="position:absolute;top:-1px;right:-1px;width:16px;height:16px;border-top:1px solid rgba(255,255,255,0.3);border-right:1px solid rgba(255,255,255,0.3);"></div>
+    <div style="position:absolute;bottom:-1px;left:-1px;width:16px;height:16px;border-bottom:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.3);"></div>
+    <div style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:1px solid rgba(255,255,255,0.3);border-right:1px solid rgba(255,255,255,0.3);"></div>
+  </div>
+
+  <div style="position:relative;z-index:3;width:100%;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:0;">
+
+    <!-- Marca -->
+    <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
+
+    <!-- Año -->
+    <div style="font-size:10px;letter-spacing:6px;color:#ff4422;text-transform:uppercase;margin-bottom:1rem;">A Ñ O &nbsp; 2 0 4 0</div>
+
+    <!-- Avatar -->
+    <div style="width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);overflow:hidden;margin-bottom:1.2rem;background:#1a1a1a;">
+      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+
+    <!-- Nombre -->
+    <div style="font-size:24px;font-weight:700;font-style:italic;margin-bottom:0.4rem;">El Piloto</div>
+    <div style="font-size:12px;letter-spacing:5px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:0.5rem;">P I L O T O &nbsp; L L A M A N D O</div>
+
+    <!-- Estado parpadeando -->
+    <div style="font-size:11px;letter-spacing:5px;color:#4ade80;text-transform:uppercase;margin-bottom:3rem;animation:blink 1.2s infinite;">L L A M A D A &nbsp; E N T R A N T E . . .</div>
+
+    <!-- Botón contestar -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <button onclick="contestar()" style="
+        width:90px;height:90px;
+        border-radius:50%;
+        background:#16a34a;
+        border:4px solid #22c55e;
+        cursor:pointer;
+        display:flex;flex-direction:column;
+        align-items:center;justify-content:center;
+        gap:4px;
+        animation:ring 0.5s infinite alternate;
+      ">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+        <div style="font-size:10px;font-weight:900;letter-spacing:2px;color:#fff;text-transform:uppercase;">CONTESTAR</div>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes ring {
+    from{transform:scale(1);box-shadow:0 0 0 0 rgba(34,197,94,0.6);}
+    to{transform:scale(1.08);box-shadow:0 0 0 14px rgba(34,197,94,0);}
+  }
+</style>
+
 </body>
 </html>
