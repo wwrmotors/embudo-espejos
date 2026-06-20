@@ -51,6 +51,15 @@
   .btn-tipo-moto.show { opacity:1; pointer-events:all; }
   .btn-tipo-moto:active { background:#aa1800; }
 
+  .btn-cta-secondary {
+    position:absolute; bottom:7.3rem; left:50%; transform:translateX(-50%);
+    z-index:10; width:calc(100% - 3rem); max-width:360px;
+    padding:14px 24px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.35); color:#fff; border-radius:2px;
+    font-family:'Georgia',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase;
+    cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+  }
+  .btn-cta-secondary:active { background:rgba(255,255,255,0.18); }
+
   .variant-grid {
     display:grid; grid-template-columns:1fr 1fr; gap:14px;
     width:100%; max-width:420px;
@@ -138,7 +147,8 @@
 
 <!-- S2: VIDEO PRINCIPAL -->
 <div class="screen" id="s2">
-  <video class="bg-video" id="video1" playsinline
+  <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80') center/cover;z-index:0;"></div>
+  <video class="bg-video" id="video1" playsinline muted
     src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN.13%20MBFINAL.mp4"></video>
 </div>
 
@@ -277,7 +287,7 @@
 
 <!-- S10: INFORMACION DEL PRODUCTO (landing clasica) -->
 <div class="screen" id="s10">
-  <div style="width:100%;height:100dvh;overflow-y:auto;padding:2.5rem 1.5rem 7rem;display:flex;flex-direction:column;align-items:center;">
+  <div style="width:100%;height:100dvh;overflow-y:auto;padding:2.5rem 1.5rem 11rem;display:flex;flex-direction:column;align-items:center;">
     <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:1.5rem;">W W R &nbsp; M O T O R S</div>
     <h2 style="font-size:clamp(24px,7vw,32px);font-weight:900;text-transform:uppercase;text-align:center;line-height:1.2;margin-bottom:1rem;">
       Espejos <span style="color:#ff4422;font-style:italic;">WWR</span>
@@ -291,36 +301,15 @@
       <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#4ade80;">✓</span> Beneficio 3 (editar)</div>
     </div>
   </div>
-  <button class="btn-over-video show" onclick="goTo(11)">
+  <button class="btn-cta-secondary" onclick="irA('landing')">
+    <span>VER MÁS INFORMACIÓN</span><span>→</span>
+  </button>
+  <button class="btn-over-video show" onclick="irA('releasit')">
     <span>COMPRAR AHORA</span><span>→</span>
   </button>
 </div>
 
-<!-- S11: FORMULARIO DE PEDIDO (estilo Releasit) -->
-<div class="screen" id="s11">
-  <div style="width:100%;height:100dvh;overflow-y:auto;padding:2.5rem 1.5rem 3rem;display:flex;flex-direction:column;align-items:center;">
-    <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:0.5rem;">W W R &nbsp; M O T O R S</div>
-    <h2 style="font-size:22px;font-weight:900;text-transform:uppercase;text-align:center;margin-bottom:0.3rem;">Finaliza tu pedido</h2>
-    <div id="s11Resumen" style="font-size:11px;letter-spacing:2px;color:#ff4422;text-transform:uppercase;margin-bottom:2rem;">ESPEJOS WWR</div>
-    <form id="formCompra" style="width:100%;max-width:420px;display:flex;flex-direction:column;" onsubmit="return enviarPedido(event)">
-      <input class="form-field" type="text" placeholder="Nombre completo" required>
-      <input class="form-field" type="tel" placeholder="Número de WhatsApp" required>
-      <input class="form-field" type="text" placeholder="Ciudad" required>
-      <input class="form-field" type="text" placeholder="Dirección de entrega" required>
-      <button class="btn-primary" type="submit" style="max-width:none;margin-top:8px;"><span>CONFIRMAR PEDIDO</span><span>→</span></button>
-    </form>
-    <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-top:1.5rem;text-align:center;">PAGO CONTRA ENTREGA DISPONIBLE</div>
-  </div>
-</div>
-
-<!-- S12: CONFIRMACION -->
-<div class="screen" id="s12">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding:2rem;text-align:center;">
-    <div style="font-size:60px;">✅</div>
-    <h2 style="font-size:24px;font-weight:900;text-transform:uppercase;">¡Pedido recibido!</h2>
-    <p style="font-size:14px;color:rgba(255,255,255,0.6);max-width:320px;">Nuestro equipo te contactará pronto para confirmar tu pedido y coordinar la entrega.</p>
-  </div>
-</div>
+<!-- S11 y S12 removidas: "Comprar ahora" ahora lleva directo a tu link externo de Releasit -->
 
 <script>
   let currentScreen = 0;
@@ -348,7 +337,6 @@
     if (n === 6) { playVideo('video4', null, true); setTimeout(() => showBtn('btnTipoMoto'), 3000); }
     if (n === 8) cargarVariante(8);
     if (n === 9) cargarVariante(9);
-    if (n === 11) actualizarResumen();
   }
 
   // ===== SELECTOR DE VARIANTES =====
@@ -389,30 +377,45 @@
 
   function actualizarResumen() {
     const v = variantes[varianteActual];
-    const el = document.getElementById('s11Resumen');
-    if (el) el.textContent = 'ESPEJOS WWR · ' + v.nombre.toUpperCase();
+    return 'ESPEJOS WWR · ' + v.nombre.toUpperCase();
   }
 
-  // ===== FORMULARIO DE PEDIDO =====
-  function enviarPedido(e) {
-    e.preventDefault();
-    // TODO: aquí va la integración real con Releasit (script/API/webhook de tu cuenta)
-    // Por ahora solo confirma visualmente y pasa a la pantalla de agradecimiento.
-    goTo(12);
-    return false;
+  // ===== ENLACES EXTERNOS (Comprar ahora / Ver más información) =====
+  const enlaces = {
+    releasit: '', // TODO: pega aquí tu link de checkout Releasit COD
+    landing:  '', // TODO: pega aquí el link de tu landing page original
+  };
+
+  function irA(tipo) {
+    const url = enlaces[tipo];
+    if (!url) {
+      alert('Falta configurar el link de ' + (tipo === 'releasit' ? 'Releasit' : 'la landing') + '. Avísale a WWR Motors.');
+      return;
+    }
+    window.location.href = url;
   }
 
   function playVideo(id, onEnd, loop) {
     const v = document.getElementById(id);
     if (!v) return;
-    v.muted = false;
+    v.muted = true;
     v.currentTime = 0;
     if (loop) v.loop = true;
-    v.play().catch(() => { v.muted = true; v.play(); });
+
+    v.play().then(() => {
+      // Reproducción asegurada en silencio; intentamos activar el sonido enseguida.
+      setTimeout(() => { v.muted = false; }, 50);
+    }).catch(() => {
+      // Reintento por si el primer play() fue bloqueado.
+      setTimeout(() => v.play().catch(() => {}), 300);
+    });
+
     if (onEnd) {
       v.addEventListener('ended', onEnd, { once: true });
-      // Fallback por si el evento no dispara
-      setTimeout(onEnd, (v.duration || 60) * 1000 + 2000);
+      v.addEventListener('error', onEnd, { once: true });
+      // Fallback por si el video tarda demasiado o el evento 'ended' no dispara
+      const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 2000) : 25000;
+      setTimeout(onEnd, maxWait);
     }
   }
 
