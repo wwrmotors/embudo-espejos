@@ -6,7 +6,7 @@
 <title>WWR Motors</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  
+
   body {
     background: #000;
     color: #fff;
@@ -25,42 +25,34 @@
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.8s ease;
+    transition: opacity 1s ease;
     z-index: 1;
+    background: #000;
   }
+  .screen.active { opacity: 1; pointer-events: all; z-index: 10; }
+  .screen.exit { opacity: 0; pointer-events: none; z-index: 5; }
 
-  .screen.active {
-    opacity: 1;
-    pointer-events: all;
-    z-index: 10;
-  }
-
-  .screen.exit {
-    opacity: 0;
-    pointer-events: none;
-    z-index: 5;
-  }
-
-  /* ===== FONDO VIDEO / IMAGEN ===== */
-  .bg {
+  video.bg-video {
     position: absolute;
     inset: 0;
-    background-size: cover;
-    background-position: center;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     z-index: 0;
   }
 
-  .bg-overlay {
+  .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.55);
     z-index: 1;
+    background: rgba(0,0,0,0.45);
   }
 
   .content {
     position: relative;
     z-index: 2;
     width: 100%;
+    height: 100dvh;
     padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
@@ -68,50 +60,26 @@
     text-align: center;
   }
 
-  /* ===== LOGO / MARCA ===== */
   .brand {
     font-size: 11px;
     letter-spacing: 6px;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.4);
     text-transform: uppercase;
-    margin-bottom: auto;
     padding-top: 3rem;
+    margin-bottom: auto;
   }
 
-  /* ===== SCREEN 1 — GANCHO ===== */
-  #s1 .bg {
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%),
-      url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80') center/cover;
+  /* ===== PROGRESS ===== */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: #ff4422;
+    transition: width 0.5s ease;
+    z-index: 100;
   }
 
-  #s1 .headline {
-    font-size: clamp(28px, 8vw, 42px);
-    font-weight: 700;
-    line-height: 1.15;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  #s1 .headline span {
-    color: #ff4422;
-    font-style: italic;
-  }
-
-  #s1 .volumen {
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 3rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .vol-icon { font-size: 16px; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
+  /* ===== BTNs ===== */
   .btn-primary {
     width: 100%;
     max-width: 360px;
@@ -127,7 +95,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
     transition: background 0.2s;
   }
   .btn-primary:active { background: #aa1800; }
@@ -142,152 +109,94 @@
     cursor: pointer;
     text-decoration: underline;
     padding: 8px;
+    margin-top: 0.5rem;
   }
 
-  /* ===== SCREEN 2 — TENSION VISUAL ===== */
-  #s2 .bg {
-    background: #000;
-    animation: slow-zoom 4s ease-out forwards;
+  /* ===== S1 GANCHO ===== */
+  #s1 .headline {
+    font-size: clamp(30px, 9vw, 46px);
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
   }
-  @keyframes slow-zoom {
-    from { transform: scale(1); }
-    to { transform: scale(1.08); }
-  }
+  #s1 .headline span { color: #ff4422; font-style: italic; }
 
-  /* ===== SCREEN 3 — LLAMADA ENTRANTE ===== */
-  #s3 {
-    background: #0a0a0a;
-    background-image: 
-      radial-gradient(ellipse at 30% 20%, rgba(255,68,34,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 70% 80%, rgba(255,45,111,0.06) 0%, transparent 60%);
+  .volumen {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
+  .vol-icon { animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ===== S2 LLAMADA ENTRANTE ===== */
+  #s2 { background: #0a0a0a; }
 
   .call-frame {
     position: absolute;
     inset: 8px;
     border: 1px solid rgba(255,255,255,0.08);
+    z-index: 2;
+    pointer-events: none;
   }
   .call-corner {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 16px; height: 16px;
     border-color: rgba(255,255,255,0.3);
     border-style: solid;
   }
-  .call-corner.tl { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
-  .call-corner.tr { top: -1px; right: -1px; border-width: 1px 1px 0 0; }
-  .call-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 1px 1px; }
-  .call-corner.br { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+  .call-corner.tl { top:-1px; left:-1px; border-width:1px 0 0 1px; }
+  .call-corner.tr { top:-1px; right:-1px; border-width:1px 1px 0 0; }
+  .call-corner.bl { bottom:-1px; left:-1px; border-width:0 0 1px 1px; }
+  .call-corner.br { bottom:-1px; right:-1px; border-width:0 1px 1px 0; }
 
   .avatar-circle {
-    width: 110px;
-    height: 110px;
+    width: 110px; height: 110px;
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.15);
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     background: #1a1a1a;
   }
-  .avatar-circle img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  .avatar-circle img { width:100%; height:100%; object-fit:cover; }
 
-  .caller-handle {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
-    font-style: italic;
-  }
-
-  .caller-name {
-    font-size: 12px;
-    letter-spacing: 5px;
-    color: rgba(255,255,255,0.5);
-    text-transform: uppercase;
-    margin-bottom: 3rem;
-  }
-
+  .caller-handle { font-size: 22px; font-weight: 700; font-style: italic; margin-bottom: 0.3rem; }
+  .caller-name { font-size: 12px; letter-spacing: 5px; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 0.5rem; }
   .incoming-label {
-    font-size: 11px;
-    letter-spacing: 5px;
-    color: #4ade80;
-    text-transform: uppercase;
-    margin-bottom: 3rem;
+    font-size: 11px; letter-spacing: 5px; color: #4ade80;
+    text-transform: uppercase; margin-bottom: 2.5rem;
     animation: blink 1.2s infinite;
   }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   .call-btn {
-    width: 90px;
-    height: 90px;
+    width: 90px; height: 90px;
     border-radius: 50%;
     background: #16a34a;
     border: 4px solid #22c55e;
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     gap: 4px;
-    transition: transform 0.1s, background 0.2s;
     animation: ring 0.5s infinite alternate;
     box-shadow: 0 0 0 0 rgba(34,197,94,0.6);
   }
-  .call-btn:active { transform: scale(0.93); background: #15803d; }
+  .call-btn:active { transform: scale(0.93); }
   @keyframes ring {
-    from { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
-    to   { transform: scale(1.08); box-shadow: 0 0 0 14px rgba(34,197,94,0); }
+    from { transform:scale(1); box-shadow:0 0 0 0 rgba(34,197,94,0.6); }
+    to   { transform:scale(1.08); box-shadow:0 0 0 14px rgba(34,197,94,0); }
   }
+  .call-btn svg { width:36px; height:36px; fill:#fff; }
+  .call-btn-label { font-size:10px; font-weight:900; letter-spacing:2px; color:#fff; text-transform:uppercase; }
 
-  .call-btn svg { width: 36px; height: 36px; fill: #fff; }
-  .call-btn-label {
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #fff;
-    text-transform: uppercase;
-    font-family: 'Georgia', serif;
-  }
-
-  /* ===== SCREEN 4 — EN LLAMADA ===== */
-  #s4 {
-    background: #080808;
-    background-image: radial-gradient(ellipse at 50% 30%, rgba(255,68,34,0.06) 0%, transparent 70%);
-  }
-
-  .call-active-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 3rem 1.5rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .call-avatar-small {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-  .call-avatar-small img { width: 100%; height: 100%; object-fit: cover; }
-
-  .call-info { flex: 1; text-align: left; }
-  .call-info-name { font-size: 15px; font-weight: 600; }
-  .call-info-status { font-size: 11px; color: #4ade80; letter-spacing: 2px; }
-
-  .waveform {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin: auto 0;
-  }
+  /* ===== S3 EN LLAMADA ===== */
+  #s3 { background: #080808; }
 
   .wave-bar {
     width: 3px;
@@ -295,688 +204,316 @@
     border-radius: 2px;
     animation: wave 0.8s ease-in-out infinite;
   }
-  .wave-bar:nth-child(1) { animation-delay: 0s; }
-  .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-  .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-  .wave-bar:nth-child(4) { animation-delay: 0.1s; }
-  .wave-bar:nth-child(5) { animation-delay: 0s; }
-  .wave-bar:nth-child(6) { animation-delay: 0.15s; }
-  .wave-bar:nth-child(7) { animation-delay: 0.25s; }
-  .wave-bar:nth-child(8) { animation-delay: 0.1s; }
-  @keyframes wave {
-    0%,100% { height: 8px; }
-    50% { height: 36px; }
-  }
+  .wave-bar:nth-child(1){animation-delay:0s}
+  .wave-bar:nth-child(2){animation-delay:0.1s}
+  .wave-bar:nth-child(3){animation-delay:0.2s}
+  .wave-bar:nth-child(4){animation-delay:0.1s}
+  .wave-bar:nth-child(5){animation-delay:0s}
+  .wave-bar:nth-child(6){animation-delay:0.15s}
+  .wave-bar:nth-child(7){animation-delay:0.25s}
+  .wave-bar:nth-child(8){animation-delay:0.1s}
+  @keyframes wave { 0%,100%{height:8px} 50%{height:36px} }
 
-  .call-timer {
-    font-size: 13px;
-    letter-spacing: 3px;
-    color: #4ade80;
-    margin-bottom: 0.5rem;
-  }
-
-  /* ===== SCREEN 5 — VERIFICACION ===== */
-  #s5 .bg {
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.85) 100%),
-      url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;
-  }
-
-  .verify-icon {
-    width: 64px;
-    height: 64px;
-    background: rgba(204,34,0,0.15);
-    border: 1px solid rgba(204,34,0,0.4);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-
-  .verify-label {
-    font-size: 10px;
-    letter-spacing: 5px;
-    color: #ff4422;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .verify-label::before, .verify-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255,68,34,0.3);
-    max-width: 60px;
-  }
-
-  .verify-question {
-    font-size: clamp(20px, 5.5vw, 28px);
-    font-weight: 700;
-    text-transform: uppercase;
-    line-height: 1.2;
-    margin-bottom: 2.5rem;
-    letter-spacing: 0.5px;
-  }
-
-  .option-btn {
-    width: 100%;
-    max-width: 360px;
-    padding: 16px 20px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #fff;
-    font-family: 'Georgia', serif;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 10px;
-    transition: all 0.2s;
-    text-align: left;
-  }
-  .option-btn:active { background: rgba(255,68,34,0.15); border-color: #ff4422; }
-  .option-btn.selected { background: rgba(255,68,34,0.2); border-color: #ff4422; }
-
-  .opt-letter {
-    width: 28px;
-    height: 28px;
-    background: #cc2200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  /* ===== SCREEN 6 — WHATSAPP ===== */
-  #s6 {
-    background: #111b21;
-  }
-
-  .wa-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: #202c33;
-    padding: 2.5rem 1rem 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    z-index: 3;
-  }
-
-  .wa-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-  .wa-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-  .wa-info { flex: 1; }
-  .wa-name { font-size: 15px; font-weight: 600; font-family: sans-serif; }
-  .wa-status { font-size: 12px; color: rgba(255,255,255,0.5); font-family: sans-serif; }
-  .wa-status.typing { color: #00a884; }
-
-  .wa-brand { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.2); }
-
-  .wa-lock-msg {
-    margin-top: 5.5rem;
-    background: rgba(255,255,255,0.04);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    font-family: sans-serif;
-    max-width: 320px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1rem;
-  }
-
-  .wa-messages {
-    flex: 1;
-    width: 100%;
-    padding: 0 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow: hidden;
-  }
-
-  .wa-bubble {
-    background: #005c4b;
-    border-radius: 8px 0 8px 8px;
-    padding: 10px 12px;
-    max-width: 85%;
-    align-self: flex-end;
-    font-family: sans-serif;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.4s ease;
-  }
-  .wa-bubble.show { opacity: 1; transform: translateY(0); }
-
-  .wa-play-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-
-  .wa-waveform {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    height: 28px;
-  }
-  .wa-wave-bar {
-    flex: 1;
-    background: rgba(255,255,255,0.3);
-    border-radius: 1px;
-  }
-
-  .wa-time { font-size: 10px; color: rgba(255,255,255,0.4); white-space: nowrap; }
-
-  .wa-input-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #202c33;
-    padding: 0.75rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .wa-input {
-    flex: 1;
-    background: #2a3942;
-    border: none;
-    border-radius: 24px;
-    padding: 10px 16px;
-    color: rgba(255,255,255,0.4);
-    font-size: 14px;
-    font-family: sans-serif;
-    pointer-events: none;
-  }
-
-  /* ===== SCREEN 7 — BLOQUEO / NOTIF ===== */
-  #s7 {
-    background: #0f172a;
-    background-image: 
-      linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%),
-      url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .lock-time {
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: rgba(255,255,255,0.7);
-    text-transform: uppercase;
-    margin-bottom: 0.25rem;
-  }
-  .lock-hour { font-size: 80px; font-weight: 200; line-height: 1; margin-bottom: 2rem; }
-
-  .notif-card {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 14px 16px;
-    width: 90%;
-    max-width: 340px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .notif-card:active { background: rgba(255,255,255,0.18); }
-
-  .notif-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: #25d366;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .notif-text { flex: 1; }
-  .notif-app { font-size: 11px; font-weight: 700; font-family: sans-serif; color: rgba(255,255,255,0.8); }
-  .notif-sender { font-size: 13px; font-weight: 700; font-family: sans-serif; }
-  .notif-msg { font-size: 12px; color: rgba(255,255,255,0.6); font-family: sans-serif; display: flex; align-items: center; gap: 4px; }
-
-  .notif-time { font-size: 11px; color: rgba(255,255,255,0.4); font-family: sans-serif; }
-
-  /* ===== SCREEN 8 — TIKTOK ===== */
-  #s8 {
-    background: #000;
-    overflow: hidden;
-  }
-
-  .tiktok-video {
-    position: absolute;
-    inset: 0;
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%),
-      url('https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80') center/cover;
-  }
-
-  .tiktok-sidebar {
-    position: absolute;
-    right: 12px;
-    bottom: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    z-index: 3;
-  }
-
-  .tt-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    overflow: hidden;
+  /* ===== S4–S8 ESCENAS VIDEO ===== */
+  .scene-text {
     position: relative;
-  }
-  .tt-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .tt-plus {
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 18px;
-    height: 18px;
-    background: #ff2d55;
-    border-radius: 50%;
+    z-index: 2;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
+    height: 100dvh;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    gap: 1rem;
   }
 
-  .tt-action { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .tt-action-icon { font-size: 32px; }
-  .tt-action-count { font-size: 12px; font-weight: 600; font-family: sans-serif; }
-
-  .tiktok-info {
-    position: absolute;
-    bottom: 80px;
-    left: 12px;
-    right: 70px;
-    z-index: 3;
-  }
-
-  .tt-handle { font-size: 14px; font-weight: 700; font-family: sans-serif; margin-bottom: 4px; }
-  .tt-caption { font-size: 13px; font-family: sans-serif; line-height: 1.4; margin-bottom: 8px; }
-
-  .tiktok-nav {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #000;
-    border-top: 0.5px solid rgba(255,255,255,0.1);
-    padding: 8px 0 16px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 4;
-  }
-
-  .tt-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-family: sans-serif; }
-  .tt-nav-item.active { color: #fff; font-weight: 700; }
-  .tt-nav-item:not(.active) { color: rgba(255,255,255,0.5); }
-  .tt-nav-icon { font-size: 22px; }
-
-  .tt-add-btn {
-    background: #fff;
-    color: #000;
-    border: none;
-    width: 44px;
-    height: 28px;
-    border-radius: 6px;
-    font-size: 20px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .tiktok-brand {
-    position: absolute;
-    top: 3rem;
-    left: 50%;
-    transform: translateX(-50%);
+  .static-label {
     font-size: 10px;
-    letter-spacing: 3px;
+    letter-spacing: 6px;
     color: rgba(255,255,255,0.3);
-    z-index: 3;
+    text-transform: uppercase;
+  }
+
+  .big-text {
+    font-size: clamp(32px, 10vw, 56px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+    letter-spacing: -1px;
+  }
+  .big-text span { color: #ff4422; font-style: italic; }
+
+  .voice-bubble {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px 16px 16px 4px;
+    padding: 14px 18px;
+    max-width: 320px;
+    font-size: 16px;
+    line-height: 1.5;
+    font-style: italic;
+    color: rgba(255,255,255,0.9);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.5s ease;
+  }
+  .voice-bubble.show { opacity: 1; transform: translateY(0); }
+
+  .interference {
+    font-size: 11px;
+    letter-spacing: 8px;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    animation: flicker 0.3s infinite;
+  }
+  @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .year-text {
+    font-size: clamp(80px, 22vw, 120px);
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: -4px;
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
     white-space: nowrap;
   }
 
-  .tt-play-icon {
+  /* ===== S9 EVOLUCION ===== */
+  .evo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 320px;
+  }
+  .evo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s ease;
+    color: rgba(255,255,255,0.7);
+  }
+  .evo-item.show { opacity: 1; transform: translateX(0); }
+  .evo-item .check { color: #4ade80; font-size: 18px; }
+
+  /* ===== S10 SOLO QUEDA ===== */
+  #s10 { background: #000; }
+  .esto-text {
+    font-size: clamp(80px, 24vw, 130px);
+    font-weight: 900;
+    letter-spacing: -3px;
+    line-height: 1;
+    color: #ff4422;
+    animation: esto-pulse 1s infinite alternate;
+  }
+  @keyframes esto-pulse { from{opacity:1} to{opacity:0.6} }
+
+  /* ===== S11 ESPEJOS ===== */
+  #s11 { background: #000; }
+
+  /* ===== S12 CIERRE ===== */
+  #s12 { background: #000; }
+  .cierre-title {
+    font-size: clamp(28px, 8vw, 44px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+  .cierre-pausa { height: 1.5rem; }
+
+  /* ===== S13 SELECTOR MOTO ===== */
+  #s13 { background: #080808; overflow: hidden; }
+
+  .selector-title {
+    font-size: 13px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 1.5rem;
+  }
+
+  .motos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 380px;
+    padding: 0 1rem;
+  }
+
+  .moto-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 16px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .moto-card:active, .moto-card.selected {
+    background: rgba(255,68,34,0.15);
+    border-color: #ff4422;
+  }
+  .moto-card .moto-icon { font-size: 32px; }
+  .moto-card .moto-name {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+  }
+
+  /* ===== S14 ANTES/DESPUES ===== */
+  #s14 { background: #080808; }
+
+  .compare-container {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 9/14;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+
+  .compare-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .compare-after-clip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    width: 50%;
+    transition: width 0.8s ease;
+  }
+  .compare-after-clip img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 380px;
+    max-width: none;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .compare-divider {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: #fff;
+    transform: translateX(-50%);
+    transition: left 0.8s ease;
+    z-index: 3;
+  }
+  .compare-handle {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -60%);
-    z-index: 2;
-    opacity: 0.9;
+    transform: translate(-50%, -50%);
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #000;
   }
 
-  /* ===== SCREEN 9 — PAUSA METACOGNITIVA ===== */
-  #s9 .bg {
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%),
-      url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;
-  }
-
-  .pausa-title {
-    font-size: clamp(60px, 18vw, 90px);
-    font-weight: 900;
-    letter-spacing: -2px;
-    line-height: 1;
-    margin-bottom: 0.25rem;
-  }
-  .pausa-sub {
-    font-size: 11px;
-    letter-spacing: 5px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-  }
-
-  .tiempo-box {
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 1.5rem 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    width: 260px;
-  }
-  .tiempo-label { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 0.5rem; }
-  .tiempo-num { font-size: 64px; font-weight: 900; line-height: 1; }
-  .tiempo-min { font-size: 13px; color: rgba(255,255,255,0.5); }
-  .tiempo-here { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-top: 0.25rem; }
-
-  .insight-box {
-    border: 1px solid rgba(204,34,0,0.3);
-    background: rgba(204,34,0,0.06);
-    padding: 1rem 1.25rem;
-    font-size: 14px;
-    line-height: 1.6;
-    text-align: center;
-    width: 100%;
-    max-width: 360px;
-    margin-bottom: 1rem;
-  }
-  .insight-box strong { color: #ff4422; }
-
-  /* ===== SCREEN 10 — PROMESA ===== */
-  #s10 .bg {
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.85) 100%),
-      url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;
-  }
-
-  .nadie-compra {
-    font-size: clamp(24px, 7vw, 36px);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.25rem;
-    line-height: 1;
-  }
-  .nadie-sub {
-    font-size: 12px;
-    letter-spacing: 5px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    margin-bottom: 3rem;
-  }
-
-  .desliza {
+  .compare-label {
+    position: absolute;
+    bottom: 10px;
     font-size: 10px;
-    letter-spacing: 4px;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
-    animation: bounce 1.5s infinite;
-    margin-top: auto;
-    padding-bottom: 3rem;
-  }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ===== SCREEN 11 — IA FOTO ===== */
-  #s11 .bg {
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 100%),
-      url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80') center/cover;
-  }
-
-  .ia-headline {
-    font-size: clamp(24px, 7vw, 36px);
-    font-weight: 900;
-    text-transform: uppercase;
-    line-height: 1.1;
-    margin-bottom: 0.5rem;
-  }
-  .ia-sub {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 2.5rem;
-    letter-spacing: 1px;
-  }
-
-  .upload-zone {
-    width: 100%;
-    max-width: 360px;
-    border: 1px dashed rgba(255,255,255,0.2);
-    padding: 2rem 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    margin-bottom: 1rem;
-    transition: border-color 0.2s, background 0.2s;
-    position: relative;
-  }
-  .upload-zone:active, .upload-zone.hover { border-color: #ff4422; background: rgba(255,68,34,0.05); }
-
-  .upload-icon { font-size: 40px; margin-bottom: 0.75rem; opacity: 0.5; }
-  .upload-text { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem; }
-  .upload-hint { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; text-transform: uppercase; }
-
-  #fileInput { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-
-  .ia-result {
-    width: 100%;
-    max-width: 360px;
-    display: none;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .ia-result.show { display: flex; }
-
-  .result-img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .result-label {
-    font-size: 11px;
     letter-spacing: 3px;
-    color: #4ade80;
     text-transform: uppercase;
-    text-align: center;
+    padding: 3px 8px;
+    z-index: 4;
+  }
+  .compare-label.antes { left: 10px; background: rgba(0,0,0,0.6); }
+  .compare-label.despues { right: 10px; background: rgba(204,34,0,0.8); }
+
+  /* ===== S15 OFERTA ===== */
+  #s15 {
+    background: #000;
+    overflow-y: auto;
+  }
+  #s15 .content {
+    justify-content: flex-start;
+    padding-top: 3.5rem;
+    padding-bottom: 3rem;
+    min-height: 100dvh;
+    height: auto;
+    overflow-y: auto;
   }
 
-  /* ===== SCREEN 12 — OFERTA ===== */
-  #s12 .bg {
-    background: 
-      linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%),
-      url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;
-  }
+  .oferta-tag { font-size:10px; letter-spacing:4px; color:#4ade80; text-transform:uppercase; margin-bottom:1rem; }
+  .oferta-title { font-size:clamp(28px,8vw,40px); font-weight:900; text-transform:uppercase; line-height:1.1; margin-bottom:2rem; }
+  .oferta-title span { color:#ff4422; font-style:italic; }
 
-  #s12 .content { justify-content: flex-start; padding-top: 4rem; overflow-y: auto; max-height: 100dvh; }
+  .precio-box { width:100%; max-width:360px; border:1px solid rgba(255,255,255,0.1); padding:1.5rem; margin-bottom:1rem; }
+  .precio-label { font-size:10px; letter-spacing:3px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:0.5rem; }
+  .precio-tachado { font-size:16px; color:rgba(255,255,255,0.3); text-decoration:line-through; margin-bottom:0.25rem; }
+  .precio-actual { font-size:44px; font-weight:900; line-height:1; margin-bottom:0.25rem; }
+  .precio-nota { font-size:11px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; }
 
-  .oferta-tag {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: #4ade80;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
+  .urgencia-box { width:100%; max-width:360px; border:1px solid rgba(255,68,34,0.3); background:rgba(255,68,34,0.06); padding:1rem 1.25rem; font-size:13px; color:rgba(255,255,255,0.7); text-align:center; margin-bottom:1.5rem; }
+  .urgencia-box strong { color:#ff4422; }
 
-  .oferta-title {
-    font-size: clamp(28px, 8vw, 40px);
-    font-weight: 900;
-    text-transform: uppercase;
-    line-height: 1.1;
-    margin-bottom: 2rem;
-  }
-  .oferta-title span { color: #ff4422; font-style: italic; }
-
-  .precio-box {
-    width: 100%;
-    max-width: 360px;
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .precio-label { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 0.5rem; }
-  .precio-tachado { font-size: 16px; color: rgba(255,255,255,0.3); text-decoration: line-through; margin-bottom: 0.25rem; }
-  .precio-actual { font-size: 44px; font-weight: 900; color: #fff; line-height: 1; margin-bottom: 0.25rem; }
-  .precio-nota { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; }
-
-  .urgencia-box {
-    width: 100%;
-    max-width: 360px;
-    border: 1px solid rgba(255,68,34,0.3);
-    background: rgba(255,68,34,0.06);
-    padding: 1rem 1.25rem;
-    font-size: 13px;
-    color: rgba(255,255,255,0.7);
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  .urgencia-box strong { color: #ff4422; }
-
-  .features {
-    width: 100%;
-    max-width: 360px;
-    margin-bottom: 1.5rem;
-  }
-  .feature-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    font-size: 13px;
-    color: rgba(255,255,255,0.7);
-  }
-  .feature-check { color: #4ade80; font-size: 16px; flex-shrink: 0; }
+  .features { width:100%; max-width:360px; margin-bottom:1.5rem; }
+  .feature-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px; color:rgba(255,255,255,0.7); }
+  .feature-check { color:#4ade80; font-size:16px; flex-shrink:0; }
 
   .btn-comprar {
-    width: 100%;
-    max-width: 360px;
-    padding: 20px 24px;
-    background: #16a34a;
-    color: #fff;
-    border: none;
-    font-family: 'Georgia', serif;
-    font-size: 14px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    transition: background 0.2s;
+    width:100%; max-width:360px;
+    padding:20px 24px;
+    background:#16a34a;
+    color:#fff;
+    border:none;
+    font-family:'Georgia',serif;
+    font-size:14px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:1rem;
+    transition:background 0.2s;
   }
-  .btn-comprar:active { background: #15803d; }
-
-  .envio-nota { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3rem; }
-
-  /* ===== PROGRESS BAR ===== */
-  .progress-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 2px;
-    background: #ff4422;
-    transition: width 0.5s ease;
-    z-index: 100;
-  }
-
-  /* ===== CONTINUAR BTN ===== */
-  .btn-continuar {
-    width: 100%;
-    max-width: 360px;
-    padding: 18px 24px;
-    background: #cc2200;
-    color: #fff;
-    border: none;
-    font-family: 'Georgia', serif;
-    font-size: 13px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 1rem;
-  }
-  .btn-continuar:active { background: #aa1800; }
+  .btn-comprar:active { background:#15803d; }
+  .envio-nota { font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; margin-bottom:3rem; }
 
   /* ===== UTILS ===== */
-  .mt-auto { margin-top: auto; }
-  .mb-2 { margin-bottom: 2rem; }
-  .text-red { color: #ff4422; }
-  .text-muted { color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
-  .separator { width: 40px; height: 1px; background: #cc2200; margin: 0.75rem auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .fade-in { animation: fadeInUp 0.7s ease forwards; }
 </style>
 </head>
 <body>
 
 <div class="progress-bar" id="progressBar" style="width:0%"></div>
 
-<!-- ===== SCREEN 1: GANCHO ===== -->
+<!-- ===== S1: GANCHO ===== -->
 <div class="screen active" id="s1">
-  <div class="bg"></div>
-  <div class="bg-overlay"></div>
-  <div class="content" style="height:100dvh; justify-content:space-between; padding-top:3rem; padding-bottom:3rem;">
+  <video class="bg-video" autoplay muted loop playsinline
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/videomain.mp4"
+    poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay"></div>
+  <div class="content" style="justify-content:space-between; padding-top:3rem; padding-bottom:3rem;">
     <div class="brand">W W R &nbsp; M O T O R S</div>
     <div style="width:100%;">
       <h1 class="headline">¿Tu moto se ve<br>como <span>debe</span><br>verse?</h1>
@@ -987,344 +524,294 @@
       </div>
     </div>
     <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
-      <button class="btn-primary" onclick="vibracionSuave(); preloadWaAudios(); goTo(2); setTimeout(()=>{var v=document.getElementById('videoS2'); if(v){v.muted=false; v.play();}},300)">
+      <button class="btn-primary" onclick="arrancar()">
         <span>ENTRAR A LA EXPERIENCIA</span>
         <span>→</span>
       </button>
-      <button class="btn-secondary" onclick="goTo(12)">Ya vi esto antes</button>
+      <button class="btn-secondary" onclick="goTo(15)">Ya vi esto antes</button>
     </div>
   </div>
 </div>
 
-<!-- ===== SCREEN 2: TENSION VISUAL ===== -->
+<!-- ===== S2: LLAMADA ENTRANTE ===== -->
 <div class="screen" id="s2">
-  <video id="videoS2" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" src="https://wwrmotorszonadeatraccion.b-cdn.net/videomain.mp4" preload="auto" poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80" onerror="this.style.display='none'"></video>
-  <div class="bg-overlay" style="background:rgba(0,0,0,0.3)"></div>
-  <div class="content" style="height:100dvh;">
-    <div class="brand" style="margin-bottom:auto; margin-top:3rem;">W W R &nbsp; M O T O R S</div>
-  </div>
-</div>
-
-<!-- ===== SCREEN 3: LLAMADA ENTRANTE ===== -->
-<div class="screen" id="s3">
   <div class="call-frame">
-    <div class="call-corner tl"></div>
-    <div class="call-corner tr"></div>
-    <div class="call-corner bl"></div>
-    <div class="call-corner br"></div>
+    <div class="call-corner tl"></div><div class="call-corner tr"></div>
+    <div class="call-corner bl"></div><div class="call-corner br"></div>
   </div>
-  <div class="content" style="height:100dvh; justify-content:center; padding-top:4rem; gap:0;">
-    <div class="brand" style="margin-bottom:2.5rem;">W W R &nbsp; M O T O R S</div>
-    <div class="avatar-circle" style="width:120px;height:120px;margin-bottom:1.5rem;">
+  <!-- Video fondo ciudad oscura lluvia -->
+  <video class="bg-video" id="videoLluvia" autoplay muted loop playsinline
+    src="<!-- VIDEO_CIUDAD_LLUVIA -->"
+    poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.6)"></div>
+  <div class="content" style="justify-content:center; gap:0;">
+    <div class="brand" style="margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
+    <div class="avatar-circle" style="width:120px;height:120px;margin-bottom:1.2rem;">
       <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="El Piloto" onerror="this.style.background='#333'">
     </div>
-    <div class="caller-handle" style="font-size:24px; margin-bottom:0.4rem;">@wwrmotors_oficial</div>
-    <div class="caller-name" style="margin-bottom:0.5rem;">E L &nbsp; P I L O T O</div>
-    <div class="incoming-label" style="margin-bottom:3rem;">L L A M A D A &nbsp; E N T R A N T E . . .</div>
-    <button class="call-btn" onclick="goTo(4)" aria-label="Contestar llamada">
+    <div class="caller-handle">@wwrmotors_oficial</div>
+    <div class="caller-name">E L &nbsp; P I L O T O</div>
+    <div class="incoming-label">L L A M A D A &nbsp; E N T R A N T E . . .</div>
+    <button class="call-btn" onclick="contestar()" aria-label="Contestar">
       <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
       <div class="call-btn-label">CONTESTAR</div>
     </button>
   </div>
 </div>
 
-<!-- ===== SCREEN 4: EN LLAMADA ===== -->
-<div class="screen" id="s4" style="background:#080808; flex-direction:column; align-items:center; justify-content:center;">
-  <div style="position:absolute; top:0; left:0; right:0; padding:3rem 1.5rem 1rem; display:flex; align-items:center; gap:12px; background:rgba(0,0,0,0.5);">
-    <div style="width:44px; height:44px; border-radius:50%; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.background='#333'">
+<!-- ===== S3: EN LLAMADA — MOTERO 1940 ===== -->
+<div class="screen" id="s3">
+  <!-- Video: motero moderno + motero 1940 con teléfono antiguo, aviones, llamas -->
+  <video class="bg-video" id="video1940" autoplay muted loop playsinline
+    src="<!-- VIDEO_1940 -->"
+    poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.55)"></div>
+
+  <!-- Header llamada -->
+  <div style="position:absolute;top:0;left:0;right:0;padding:3rem 1.5rem 1rem;display:flex;align-items:center;gap:12px;z-index:3;">
+    <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;border:1px solid rgba(255,255,255,0.2);">
+      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px; font-weight:600;">@wwrmotors_oficial</div>
-      <div id="callStatus" style="font-size:11px; color:#4ade80; letter-spacing:2px;">CONECTANDO...</div>
+      <div style="font-size:15px;font-weight:600;">@wwrmotors_oficial</div>
+      <div id="callStatus" style="font-size:11px;color:#4ade80;letter-spacing:2px;">EN LLAMADA</div>
     </div>
-    <div style="font-size:10px; letter-spacing:3px; color:rgba(255,255,255,0.2);">W W R</div>
+    <div id="callTimer" style="font-size:13px;letter-spacing:3px;color:#4ade80;">00:01</div>
   </div>
 
-  <div style="display:flex; align-items:center; gap:4px; margin-bottom:1rem;">
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
-    <div class="wave-bar" style="height:8px"></div>
+  <!-- Waveform -->
+  <div style="display:flex;align-items:center;gap:4px;margin-bottom:1.5rem;z-index:3;position:relative;">
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div>
   </div>
 
-  <div id="callTimer" style="font-size:13px; letter-spacing:3px; color:#4ade80; margin-bottom:2rem;">00:01</div>
-
-  <button id="btnContinuar" onclick="goTo(5)" style="
-    display:none;
-    padding:18px 40px;
-    background:#cc2200;
-    color:#fff;
-    border:none;
-    font-family:'Georgia',serif;
-    font-size:13px;
-    letter-spacing:4px;
-    text-transform:uppercase;
-    cursor:pointer;
-    width:280px;
-  ">CONTINUAR →</button>
-
+  <!-- Diálogo voz -->
+  <div style="position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 1.5rem;width:100%;">
+    <div class="interference">— INTERFERENCIA —</div>
+    <div class="voice-bubble" id="vb1">"¿Me escuchas?"</div>
+    <div class="voice-bubble" id="vb2">"Tengo poco tiempo."</div>
+    <div class="voice-bubble" id="vb3">"Estoy llamando desde el año 2040."</div>
+    <div class="voice-bubble" id="vb4" style="background:rgba(255,68,34,0.1);border-color:rgba(255,68,34,0.3);">"Soy tú."</div>
+  </div>
 </div>
 
-<!-- ===== SCREEN 5: VERIFICACION ===== -->
+<!-- ===== S4: ¿QUÉ AÑO ES? — 1940 ===== -->
+<div class="screen" id="s4">
+  <video class="bg-video" id="videoS4" autoplay muted loop playsinline
+    src="<!-- VIDEO_1940_2 -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.6)"></div>
+  <div class="scene-text" style="position:relative;z-index:2;">
+    <div class="voice-bubble" id="vb5" style="font-size:18px;">"¿Qué año es?"</div>
+    <div class="voice-bubble" id="vb6" style="font-size:22px;font-weight:700;color:#ff4422;">"1940."</div>
+    <div class="year-text">1940</div>
+  </div>
+</div>
+
+<!-- ===== S5: 86 AÑOS — VIDEO CAPCUT ===== -->
 <div class="screen" id="s5">
-  <div class="bg"></div>
-  <div class="bg-overlay"></div>
-  <div class="content" style="height:100dvh; justify-content:center; padding-top:3rem;">
-    <div class="brand" style="margin-bottom:3rem;">W W R &nbsp; M O T O R S</div>
-    <div class="verify-icon">
+  <!-- Video generado en CapCut con texto animado -->
+  <video class="bg-video" id="videoS5" autoplay muted loop playsinline
+    src="<!-- VIDEO_86_AÑOS -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.3)"></div>
+  <div class="scene-text" style="position:relative;z-index:2;">
+    <div class="big-text" id="txt86" style="opacity:0;">"Han pasado<br><span>86 años…"</span></div>
+    <div class="voice-bubble" id="vb7" style="font-size:16px;">"Y seguimos usando casi<br>los mismos espejos."</div>
+  </div>
+</div>
+
+<!-- ===== S6: EVOLUCIÓN MOTOS — VIDEO CAPCUT ===== -->
+<div class="screen" id="s6">
+  <video class="bg-video" id="videoS6" autoplay muted loop playsinline
+    src="<!-- VIDEO_EVOLUCION -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.4)"></div>
+  <div class="scene-text" style="position:relative;z-index:2;">
+    <div class="static-label">TODO EVOLUCIONÓ</div>
+    <div class="evo-list">
+      <div class="evo-item" id="evo1"><span class="check">✓</span> Motor</div>
+      <div class="evo-item" id="evo2"><span class="check">✓</span> Frenos</div>
+      <div class="evo-item" id="evo3"><span class="check">✓</span> Luces</div>
+      <div class="evo-item" id="evo4"><span class="check">✓</span> Suspensión</div>
+      <div class="evo-item" id="evo5"><span class="check">✓</span> Diseño</div>
+      <div class="evo-item" id="evo6"><span class="check">✓</span> Tecnología</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S7: SOLO QUEDA CAMBIAR UNA COSA ===== -->
+<div class="screen" id="s7">
+  <video class="bg-video" id="videoS7" autoplay muted loop playsinline
+    src="<!-- VIDEO_SOLO_QUEDA -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.7)"></div>
+  <div class="scene-text" style="position:relative;z-index:2;">
+    <div style="font-size:14px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Solo queda cambiar…</div>
+    <div class="esto-text">ESTO.</div>
+  </div>
+</div>
+
+<!-- ===== S8: EXPLOSIÓN ESPEJOS — VIDEO CAPCUT ===== -->
+<div class="screen" id="s8">
+  <video class="bg-video" id="videoEspejos" autoplay muted playsinline
+    src="<!-- VIDEO_ESPEJOS -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.2)"></div>
+</div>
+
+<!-- ===== S9: CIERRE DEL PILOTO ===== -->
+<div class="screen" id="s9">
+  <video class="bg-video" id="videoCierre" autoplay muted playsinline
+    src="<!-- VIDEO_CIERRE -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.5)"></div>
+  <div class="scene-text" style="position:relative;z-index:2;justify-content:flex-end;padding-bottom:5rem;">
+    <div class="voice-bubble" id="vb8" style="font-size:15px;">"Las motos cuentan quién eres."</div>
+    <div class="voice-bubble" id="vb9" style="font-size:15px;">"Incluso cuando están estacionadas."</div>
+  </div>
+</div>
+
+<!-- ===== S10: ESCENA FINAL — MOTO SE ALEJA ===== -->
+<div class="screen" id="s10">
+  <video class="bg-video" id="videoFinal" autoplay muted playsinline
+    src="<!-- VIDEO_FINAL -->"
+    onerror="this.style.display='none'"></video>
+  <div class="overlay" style="background:rgba(0,0,0,0.4)"></div>
+  <div class="scene-text" style="position:relative;z-index:2;">
+    <div class="cierre-title" id="txtCierre1" style="opacity:0;">NO CAMBIES<br>DE MOTO.</div>
+    <div class="cierre-pausa"></div>
+    <div class="cierre-title" id="txtCierre2" style="opacity:0;font-size:clamp(20px,6vw,32px);color:#ff4422;">CAMBIA LA FORMA<br>EN QUE LA VEN.</div>
+  </div>
+</div>
+
+<!-- ===== S11: WHATSAPP ===== -->
+<div class="screen" id="s11">
+  <div style="background:#111b21;width:100%;height:100dvh;display:flex;flex-direction:column;">
+    <div style="background:#202c33;padding:2.5rem 1rem 0.75rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;">
+        <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.background='#333'">
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:15px;font-weight:600;font-family:sans-serif;">Agente WWR</div>
+        <div id="waStatus" style="font-size:12px;color:rgba(255,255,255,0.5);font-family:sans-serif;">en línea</div>
+      </div>
+      <div style="font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.2);">WWR</div>
+    </div>
+    <div style="flex:1;padding:1rem;display:flex;flex-direction:column;gap:8px;overflow:hidden;" id="waMessages"></div>
+    <div style="background:#202c33;padding:0.75rem 1rem;display:flex;align-items:center;gap:10px;">
+      <input style="flex:1;background:#2a3942;border:none;border-radius:24px;padding:10px 16px;color:rgba(255,255,255,0.4);font-size:14px;font-family:sans-serif;" placeholder="Escribe un mensaje..." readonly>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S12: SELECTOR DE MOTO ===== -->
+<div class="screen" id="s12">
+  <div class="content" style="justify-content:center;gap:0;padding-top:3rem;">
+    <div class="brand" style="margin-bottom:1rem;">W W R &nbsp; M O T O R S</div>
+    <div class="selector-title">¿Cuál es tu moto?</div>
+    <div class="motos-grid">
+      <div class="moto-card" onclick="seleccionarMoto('deportiva')">
+        <div class="moto-icon">🏎️</div>
+        <div class="moto-name">Deportiva</div>
+      </div>
+      <div class="moto-card" onclick="seleccionarMoto('naked')">
+        <div class="moto-icon">🏍️</div>
+        <div class="moto-name">Naked</div>
+      </div>
+      <div class="moto-card" onclick="seleccionarMoto('enduro')">
+        <div class="moto-icon">🪖</div>
+        <div class="moto-name">Enduro</div>
+      </div>
+      <div class="moto-card" onclick="seleccionarMoto('adventure')">
+        <div class="moto-icon">🗺️</div>
+        <div class="moto-name">Adventure</div>
+      </div>
+      <div class="moto-card" onclick="seleccionarMoto('scooter')">
+        <div class="moto-icon">🛵</div>
+        <div class="moto-name">Scooter</div>
+      </div>
+      <div class="moto-card" onclick="seleccionarMoto('trabajo')">
+        <div class="moto-icon">📦</div>
+        <div class="moto-name">Trabajo</div>
+      </div>
+      <div class="moto-card" onclick="seleccionarMoto('cruiser')" style="grid-column:span 2;">
+        <div class="moto-icon">🦅</div>
+        <div class="moto-name">Cruiser</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S13: ANTES / DESPUÉS ===== -->
+<div class="screen" id="s13">
+  <div class="content" style="justify-content:center;gap:1rem;">
+    <div class="brand" style="margin-bottom:0.5rem;">W W R &nbsp; M O T O R S</div>
+    <div id="motoSeleccionada" style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.4);text-transform:uppercase;"></div>
+
+    <div class="compare-container" id="compareBox">
+      <!-- Imagen ANTES (fondo) -->
+      <img class="compare-img" id="imgAntes" src="" alt="Sin espejos">
+      <!-- Imagen DESPUÉS (encima, recortada) -->
+      <div class="compare-after-clip" id="afterClip">
+        <img id="imgDespues" src="" alt="Con espejos WWR">
+      </div>
+      <!-- Divisor -->
+      <div class="compare-divider" id="compareDivider">
+        <div class="compare-handle">⇔</div>
+      </div>
+      <div class="compare-label antes">SIN ESPEJOS</div>
+      <div class="compare-label despues">CON WWR</div>
+    </div>
+
+    <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px;">Desliza para comparar</div>
+
+    <button class="btn-primary" onclick="goTo(14)" style="margin-top:0.5rem;">
+      <span>QUIERO ESTOS ESPEJOS</span><span>→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== S14: VERIFICACION / PREGUNTA ===== -->
+<div class="screen" id="s14">
+  <div class="content" style="justify-content:center;padding-top:3rem;">
+    <div class="brand" style="margin-bottom:2.5rem;">W W R &nbsp; M O T O R S</div>
+    <div style="width:64px;height:64px;background:rgba(204,34,0,0.15);border:1px solid rgba(204,34,0,0.4);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4422" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
     </div>
-    <div class="verify-label">VERIFICACIÓN DE ACCESO</div>
-    <h2 class="verify-question">¿Qué tan importante<br>es para ti que tu<br>moto se vea diferente?</h2>
-    <button class="option-btn" onclick="selectOption(this, false)">
-      <div class="opt-letter">A</div>
-      <span>No me importa, es solo transporte</span>
+    <div style="font-size:10px;letter-spacing:5px;color:#ff4422;text-transform:uppercase;margin-bottom:1.5rem;">VERIFICACIÓN DE ACCESO</div>
+    <h2 style="font-size:clamp(20px,5.5vw,28px);font-weight:700;text-transform:uppercase;line-height:1.2;margin-bottom:2.5rem;">¿Qué tan importante<br>es para ti que tu<br>moto se vea diferente?</h2>
+    <button class="btn-primary" style="margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onclick="selectOption(this,false)">
+      <span>A — No me importa</span>
     </button>
-    <button class="option-btn" onclick="selectOption(this, false)">
-      <div class="opt-letter">B</div>
-      <span>Me gustaría pero nunca encontré algo que valga</span>
+    <button class="btn-primary" style="margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onclick="selectOption(this,false)">
+      <span>B — Me gustaría pero nunca encontré algo que valga</span>
     </button>
-    <button class="option-btn" id="optC" onclick="selectOption(this, true)">
-      <div class="opt-letter">C</div>
-      <span>Mi moto es mi identidad, tiene que verse brutal</span>
+    <button class="btn-primary" style="margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onclick="selectOption(this,true)">
+      <span>C — Mi moto es mi identidad</span>
     </button>
   </div>
 </div>
 
-<!-- ===== SCREEN 6: WHATSAPP ===== -->
-<div class="screen" id="s6">
-  <div class="wa-header">
-    <div class="wa-avatar">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="WWR" onerror="this.style.background='#333'">
-    </div>
-    <div class="wa-info">
-      <div class="wa-name">Agente WWR</div>
-      <div class="wa-status" id="waStatus">en línea</div>
-    </div>
-    <div class="wa-brand">COPY FILM'S</div>
-  </div>
-  <div style="height:100dvh; display:flex; flex-direction:column; padding-top:5.5rem; padding-bottom:5rem;">
-    <div class="wa-lock-msg">
-      🔒 Los mensajes están cifrados de extremo a extremo.
-    </div>
-    <div class="wa-messages" id="waMessages"></div>
-  </div>
-  <div class="wa-input-bar">
-    <input class="wa-input" placeholder="Escribe un mensaje..." readonly>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-  </div>
-</div>
-
-<!-- ===== SCREEN 7: TRANSICIÓN VIDEO ===== -->
-<div class="screen" id="s7">
-  <div style="position:absolute;inset:0;background:#000;z-index:0;"></div>
-  <div class="content" style="height:100dvh; justify-content:center; gap:0; align-items:center;">
-
-    <!-- Spinner de carga -->
-    <div id="s7Spinner" style="display:flex; flex-direction:column; align-items:center; gap:1.5rem; margin-bottom:3rem;">
-      <div style="
-        width:56px; height:56px;
-        border:2px solid rgba(255,255,255,0.1);
-        border-top:2px solid #ff4422;
-        border-radius:50%;
-        animation:spin 0.9s linear infinite;
-      "></div>
-      <div style="font-size:11px; letter-spacing:5px; color:rgba(255,255,255,0.4); text-transform:uppercase;">
-        Cargando video...
-      </div>
-    </div>
-
-    <!-- Botón que aparece tras 2s -->
-    <button id="s7Btn" onclick="goTo(8)" style="
-      display:none;
-      width:100%; max-width:360px;
-      padding:18px 24px;
-      background:#cc2200;
-      color:#fff;
-      border:none;
-      font-family:'Georgia',serif;
-      font-size:13px;
-      letter-spacing:4px;
-      text-transform:uppercase;
-      cursor:pointer;
-      justify-content:space-between;
-      align-items:center;
-      transition:background 0.2s;
-    ">
-      <span>CONTINUAR VIENDO</span>
-      <span>▶</span>
-    </button>
-
-  </div>
-</div>
-
-<!-- ===== SCREEN 8: TIKTOK ===== -->
-<div class="screen" id="s8">
-
-  <!-- Video real -->
-  <video id="videoTiktok" playsinline muted loop
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4"
-    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"
-    poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80">
-  </video>
-  <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%);z-index:1;"></div>
-
-  <div class="tiktok-brand" style="z-index:3;">W W R &nbsp; M O T O R S</div>
-
-  <div class="tiktok-sidebar" style="z-index:3;">
-    <div class="tt-avatar" style="position:relative;">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="piloto" onerror="this.style.background='#333'">
-      <div class="tt-plus">+</div>
-    </div>
-    <!-- Likes con contador animado -->
-    <div class="tt-action">
-      <div id="ttLikeIcon" style="font-size:32px; cursor:pointer;" onclick="ttToggleLike()">🤍</div>
-      <div class="tt-action-count" id="ttLikeCount">1.2K</div>
-    </div>
-    <div class="tt-action">
-      <div class="tt-action-icon">💬</div>
-      <div class="tt-action-count">89</div>
-    </div>
-    <div class="tt-action">
-      <div class="tt-action-icon">↗️</div>
-      <div class="tt-action-count">342</div>
-    </div>
-  </div>
-
-  <div class="tiktok-info" style="z-index:3;">
-    <div class="tt-handle">@wwrmotors_oficial</div>
-    <div class="tt-caption">El espejo que está cambiando el juego en Colombia 🇨🇴 #moto #espejos #wwrmotors</div>
-  </div>
-
-  <div class="tiktok-nav" style="z-index:3;">
-    <div class="tt-nav-item active">
-      <div class="tt-nav-icon">🏠</div>
-      <div>Inicio</div>
-    </div>
-    <div class="tt-nav-item">
-      <div class="tt-nav-icon">👥</div>
-      <div>Amigos</div>
-    </div>
-    <button class="tt-add-btn" onclick="goTo(9)">+</button>
-    <div class="tt-nav-item">
-      <div class="tt-nav-icon">💬</div>
-      <div>Mensajes</div>
-    </div>
-    <div class="tt-nav-item">
-      <div class="tt-nav-icon">👤</div>
-      <div>Perfil</div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== SCREEN 11: IA FOTO ===== -->
-<div class="screen" id="s11">
-  <div class="bg"></div>
-  <div class="bg-overlay"></div>
-  <div class="content" style="height:100dvh; justify-content:center; padding-top:0.5rem; padding-bottom:0.5rem;">
+<!-- ===== S15: OFERTA ===== -->
+<div class="screen" id="s15">
+  <div class="content">
     <div class="brand" style="margin-bottom:1.5rem;">W W R &nbsp; M O T O R S</div>
-
-    <!-- PASO 1: Invitación -->
-    <div id="ia-step1" style="width:100%; display:flex; flex-direction:column; align-items:center; text-align:center;">
-      <h2 class="ia-headline">¿Cómo quedaría<br><span class="text-red">tu moto?</span></h2>
-      <div class="ia-sub" style="margin-bottom:1.5rem;">LA IA PONE LOS ESPEJOS EN TU MOTO</div>
-
-      <!-- Cámara -->
-      <div class="upload-zone" id="uploadZone" style="cursor:pointer; margin-bottom:0.75rem; position:relative;">
-        <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="iaHandlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
-        <div class="upload-icon">📸</div>
-        <div class="upload-text" style="font-size:14px; margin-bottom:0.25rem;">Abrir cámara</div>
-        <div class="upload-hint">Toma la foto ahora</div>
-      </div>
-
-      <!-- Subir imagen -->
-      <div class="upload-zone" style="cursor:pointer; margin-bottom:0.75rem; position:relative; background:rgba(255,255,255,0.04);">
-        <input type="file" id="fileInputGaleria" accept="image/*" onchange="iaHandlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
-        <div class="upload-icon">🖼️</div>
-        <div class="upload-text" style="font-size:14px; margin-bottom:0.25rem;">Subir desde galería</div>
-        <div class="upload-hint">Elige una foto existente</div>
-      </div>
-
-      <!-- Saltar -->
-      <button class="btn-secondary" onclick="goTo(12)" style="margin-top:0.5rem; width:100%; max-width:360px; opacity:0.6; font-size:11px; letter-spacing:3px;">
-        SALTAR ESTE PASO →
-      </button>
-    </div>
-
-    <!-- PASO 2: Procesando -->
-    <div id="ia-step2" style="display:none; width:100%; flex-direction:column; align-items:center; text-align:center; gap:1.5rem;">
-      <div style="font-size:11px; letter-spacing:5px; color:rgba(255,255,255,0.5); text-transform:uppercase;">IA PROCESANDO</div>
-      <div style="position:relative; width:200px; height:200px;">
-        <img id="ia-preview" style="width:200px; height:200px; object-fit:cover; border:1px solid rgba(255,255,255,0.1);" src="" alt="">
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
-          <div style="width:40px;height:40px;border:2px solid rgba(255,255,255,0.15);border-top:2px solid #ff4422;border-radius:50%;animation:spin 0.9s linear infinite;"></div>
-          <div id="ia-status" style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;">Analizando moto...</div>
-        </div>
-      </div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:2px;">Esto puede tomar 20-30 segundos</div>
-    </div>
-
-    <!-- PASO 3: Resultado antes/después -->
-    <div id="ia-step3" style="display:none; width:100%; flex-direction:column; align-items:center; gap:1rem;">
-      <div style="font-size:11px; letter-spacing:5px; color:#4ade80; text-transform:uppercase;">✓ ¡ASÍ QUEDA TU MOTO!</div>
-
-      <!-- Slider antes/después -->
-      <div id="ia-compare" style="position:relative;width:100%;max-width:100%;height:65vw;max-height:450px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);touch-action:none;">
-        <img id="ia-after" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" src="" alt="Con espejos">
-        <div id="ia-before-clip" style="position:absolute;inset:0;overflow:hidden;width:50%;">
-          <img id="ia-before" style="position:absolute;top:0;left:0;width:100%;max-width:none;height:100%;object-fit:cover;" src="" alt="Sin espejos">
-        </div>
-        <!-- Línea divisora -->
-        <div id="ia-divider" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;transform:translateX(-50%);cursor:ew-resize;">
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;">⇔</div>
-        </div>
-        <!-- Labels -->
-        <div style="position:absolute;bottom:8px;left:8px;font-size:10px;letter-spacing:3px;color:#fff;background:rgba(0,0,0,0.6);padding:3px 8px;text-transform:uppercase;">Antes</div>
-        <div style="position:absolute;bottom:8px;right:8px;font-size:10px;letter-spacing:3px;color:#fff;background:rgba(204,34,0,0.8);padding:3px 8px;text-transform:uppercase;">Después</div>
-      </div>
-
-      <div style="font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-align:center;">Desliza para comparar</div>
-      <button class="btn-continuar" onclick="goTo(12)" style="width:100%;max-width:360px;margin-top:0.5rem;">VER OFERTA →</button>
-    </div>
-
-    <!-- PASO 4: Error -->
-    <div id="ia-step4" style="display:none; width:100%; flex-direction:column; align-items:center; text-align:center; gap:1.5rem;">
-      <div style="font-size:40px;">⚠️</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:1px;">No pudimos procesar la imagen.<br>Intenta con mejor iluminación.</div>
-      <button class="btn-continuar" onclick="iaReset()" style="width:100%;max-width:360px;">INTENTAR DE NUEVO</button>
-      <button class="btn-secondary" onclick="goTo(12)">Saltar este paso</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- ===== SCREEN 12: OFERTA ===== -->
-<div class="screen" id="s12">
-  <div class="bg"></div>
-  <div class="bg-overlay" style="background:rgba(0,0,0,0.92)"></div>
-  <div class="content" style="min-height:100dvh; justify-content:flex-start; padding-top:3.5rem; padding-bottom:3rem; overflow-y:auto;">
-    <div class="brand" style="margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
-    
     <div class="oferta-tag">✓ ACTO FINAL — TU MOTO TE ESPERA</div>
     <h2 class="oferta-title">Los espejos que<br>tu moto<br><span>merece.</span></h2>
-
     <div class="precio-box">
       <div class="precio-label">LOTE 1 — OFERTA DE HOY</div>
       <div class="precio-tachado">$89.900 COP</div>
       <div class="precio-actual">$59.900</div>
       <div class="precio-nota">COP · PAGO CONTRA ENTREGA</div>
     </div>
-
     <div class="urgencia-box">
-      <strong>⚠ ATENCIÓN:</strong> Oferta válida solo hoy.<br>
-      Después sube a precio regular.
+      <strong>⚠ ATENCIÓN:</strong> Oferta válida solo hoy.<br>Después sube a precio regular.
     </div>
-
     <div class="features">
       <div class="feature-item"><span class="feature-check">✓</span> Espejo retráctil tipo ala — diseño premium</div>
       <div class="feature-item"><span class="feature-check">✓</span> Instalación en menos de 5 minutos</div>
@@ -1332,7 +819,6 @@
       <div class="feature-item"><span class="feature-check">✓</span> Envío gratis a toda Colombia</div>
       <div class="feature-item"><span class="feature-check">✓</span> Pagas cuando lo recibes — 0 riesgo</div>
     </div>
-
     <button class="btn-comprar" onclick="window.location.href='https://wwrmotors.com'">
       <span>QUIERO LOS ESPEJOS →</span>
     </button>
@@ -1342,156 +828,236 @@
 
 <script>
   let currentScreen = 1;
-  let startTime = Date.now();
-  let callInterval = null;
-  let waTimeout = null;
+  const TOTAL = 15;
 
-  const totalScreens = 12;
+  // ===== IMÁGENES POR TIPO DE MOTO =====
+  // Reemplaza estas URLs cuando tengas las imágenes reales
+  const motoData = {
+    deportiva: {
+      nombre: 'Deportiva',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    },
+    naked: {
+      nombre: 'Naked',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    },
+    enduro: {
+      nombre: 'Enduro',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    },
+    adventure: {
+      nombre: 'Adventure',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    },
+    scooter: {
+      nombre: 'Scooter',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    },
+    trabajo: {
+      nombre: 'Trabajo',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    },
+    cruiser: {
+      nombre: 'Cruiser',
+      antes: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      despues: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+    }
+  };
 
-  function updateProgress(n) {
-    const pct = ((n - 1) / (totalScreens - 1)) * 100;
-    document.getElementById('progressBar').style.width = pct + '%';
-  }
-
+  // ===== NAVEGACIÓN =====
   function goTo(n) {
     const prev = document.getElementById('s' + currentScreen);
     const next = document.getElementById('s' + n);
     if (!next) return;
-
     prev.classList.remove('active');
     prev.classList.add('exit');
     setTimeout(() => prev.classList.remove('exit'), 900);
-
     next.classList.add('active');
     currentScreen = n;
     updateProgress(n);
-
-    if (n === 4) { stopVibration(); startCallSequence(); }
-    if (n === 3) startVibration();
-    if (n === 6) startWaSequence();
-    if (n === 7) setLockTime();
-    if (n === 8) {
-      const v = document.getElementById('videoTiktok');
-      if (v) {
-        v.loop = false;
-        v.currentTime = 0;
-        v.play().catch(e => console.log(e));
-        v.onended = () => { ttStopLikes(); goTo(11); };
-      }
-      ttStartLikes();
-    }
-    if (n !== 8) ttStopLikes();
-
+    onEnterScreen(n);
   }
 
-  function selectOption(btn, isCorrect) {
-    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    if (isCorrect) {
-      setTimeout(() => goTo(6), 700);
-    } else {
-      btn.style.opacity = '0.3';
-      setTimeout(() => { btn.style.opacity = '1'; btn.classList.remove('selected'); }, 600);
-    }
+  function updateProgress(n) {
+    const pct = ((n - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
   }
 
-  let vibracionAudio = null;
-
-  function vibracionSuave() {
-    vibracionAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
-    vibracionAudio.loop = true;
-    vibracionAudio.volume = 1.0;
-    vibracionAudio.load();
+  function onEnterScreen(n) {
+    if (n === 3) startDialogo();
+    if (n === 4) startDialogo4();
+    if (n === 5) startScene5();
+    if (n === 6) startEvo();
+    if (n === 8) watchVideoEnd('videoEspejos', () => goTo(9));
+    if (n === 9) startDialogo9();
+    if (n === 10) startCierre();
+    if (n === 11) startWa();
+    if (n === 13) initSlider();
   }
+
+  // ===== ARRANCAR =====
+  function arrancar() {
+    // Activar audio en S1
+    const v = document.getElementById('s1').querySelector('video');
+    if (v) { v.muted = false; v.play().catch(()=>{}); }
+    startVibration();
+    goTo(2);
+  }
+
+  // ===== CONTESTAR =====
+  function contestar() {
+    stopVibration();
+    goTo(3);
+    // Activar audio llamada
+    playAudio('https://wwrmotorszonadeatraccion.b-cdn.net/audio%20llamada.mp3');
+    // Iniciar timer
+    startCallTimer();
+  }
+
+  // ===== VIBRACIÓN =====
+  let vibInterval = null;
+  let vibAudio = null;
 
   function startVibration() {
     if (navigator.vibrate) {
-      const pattern = [];
-      for (let i = 0; i < 15; i++) { pattern.push(400, 500); }
-      navigator.vibrate(pattern);
+      const pat = [];
+      for(let i=0;i<20;i++) pat.push(400,500);
+      navigator.vibrate(pat);
     }
     try {
-      if (!vibracionAudio) {
-        vibracionAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
-        vibracionAudio.loop = true;
-        vibracionAudio.volume = 1.0;
-      }
-      vibracionAudio.currentTime = 0;
-      vibracionAudio.play();
-    } catch(e) {}
+      vibAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
+      vibAudio.loop = true;
+      vibAudio.volume = 1.0;
+      vibAudio.play().catch(()=>{});
+    } catch(e){}
   }
 
   function stopVibration() {
     if (navigator.vibrate) navigator.vibrate(0);
-    try {
-      if (vibracionAudio) {
-        vibracionAudio.pause();
-        vibracionAudio.currentTime = 0;
-      }
-    } catch(e) {}
+    if (vibAudio) { vibAudio.pause(); vibAudio.currentTime = 0; }
   }
 
-  function startCallSequence() {
-    const status = document.getElementById('callStatus');
-    const timer = document.getElementById('callTimer');
-    let secs = 1;
-    status.textContent = 'CONECTANDO...';
+  // ===== AUDIO =====
+  function playAudio(url, onEnd) {
+    const a = new Audio(url);
+    a.volume = 1.0;
+    if (onEnd) a.addEventListener('ended', onEnd, { once: true });
+    a.play().catch(()=>{});
+    return a;
+  }
 
-    // Timer del contador
-    callInterval = setInterval(() => {
+  // ===== TIMER LLAMADA =====
+  let callTimerInterval = null;
+  function startCallTimer() {
+    let secs = 1;
+    const el = document.getElementById('callTimer');
+    callTimerInterval = setInterval(() => {
       secs++;
       const m = String(Math.floor(secs/60)).padStart(2,'0');
-      const s = String(secs % 60).padStart(2,'0');
-      timer.textContent = m + ':' + s;
+      const s = String(secs%60).padStart(2,'0');
+      if(el) el.textContent = m+':'+s;
     }, 1000);
-
-    // Mostrar botón continuar
-    const showBtn = () => {
-      clearInterval(callInterval);
-      const btn = document.getElementById('btnContinuar');
-      if (btn) {
-        btn.style.display = 'block';
-      }
-    };
-
-    // Audio de la llamada
-    const callAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/audio%20llamada.mp3');
-    callAudio.volume = 1.0;
-    window._callAudio = callAudio;
-
-    setTimeout(() => {
-      status.textContent = 'EN LLAMADA';
-      callAudio.play()
-        .then(() => {
-          // Audio reproduciéndose - esperar que termine
-          callAudio.addEventListener('ended', showBtn);
-        })
-        .catch(e => {
-          // Audio bloqueado - mostrar botón a los 26 segundos
-          console.log('Audio bloqueado:', e);
-          setTimeout(showBtn, 26000);
-        });
-    }, 1200);
-
-    // Fallback absoluto a los 27 segundos
-    setTimeout(showBtn, 27000);
-
-    // Subtítulos animados que simulan lo que dice el piloto
-    const lines = [
-      { t: 1800, text: '"Qué más, hermano... te llamo porque quiero mostrarte algo."' },
-      { t: 4000, text: '"Esos espejos que estás viendo... le cambian la cara a cualquier moto."' },
-      { t: 7000, text: '"Y pronto vas a poder ver exactamente cómo quedan en la tuya."' },
-    ];
-    lines.forEach(({ t, text }) => {
-      setTimeout(() => {
-        setTimeout(() => {
-        }, 300);
-      }, t);
-    });
-
-    // El avance lo controla el botón CONTINUAR que aparece cuando termina el audio
   }
 
+  // ===== DIÁLOGO S3 =====
+  function startDialogo() {
+    const delays = [1500, 3500, 6000, 9000];
+    ['vb1','vb2','vb3','vb4'].forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+      }, delays[i]);
+    });
+    // Avanzar a S4 después del último diálogo
+    setTimeout(() => goTo(4), 12000);
+  }
+
+  // ===== DIÁLOGO S4 =====
+  function startDialogo4() {
+    setTimeout(() => {
+      const el = document.getElementById('vb5');
+      if (el) el.classList.add('show');
+    }, 1000);
+    setTimeout(() => {
+      const el = document.getElementById('vb6');
+      if (el) el.classList.add('show');
+    }, 3000);
+    setTimeout(() => goTo(5), 6000);
+  }
+
+  // ===== SCENE 5 =====
+  function startScene5() {
+    setTimeout(() => {
+      const el = document.getElementById('txt86');
+      if (el) { el.style.opacity = '1'; el.classList.add('fade-in'); }
+    }, 800);
+    setTimeout(() => {
+      const el = document.getElementById('vb7');
+      if (el) el.classList.add('show');
+    }, 2500);
+    setTimeout(() => goTo(6), 6000);
+  }
+
+  // ===== EVOLUCIÓN S6 =====
+  function startEvo() {
+    ['evo1','evo2','evo3','evo4','evo5','evo6'].forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+      }, 600 + i * 500);
+    });
+    setTimeout(() => goTo(7), 5500);
+  }
+
+  // ===== WATCH VIDEO END =====
+  function watchVideoEnd(videoId, cb) {
+    const v = document.getElementById(videoId);
+    if (!v) { setTimeout(cb, 5000); return; }
+    v.loop = false;
+    v.currentTime = 0;
+    v.muted = false;
+    v.play().catch(()=>{});
+    v.addEventListener('ended', cb, { once: true });
+    // Fallback
+    setTimeout(cb, 30000);
+  }
+
+  // ===== DIÁLOGO S9 =====
+  function startDialogo9() {
+    setTimeout(() => {
+      const el = document.getElementById('vb8');
+      if (el) el.classList.add('show');
+    }, 1500);
+    setTimeout(() => {
+      const el = document.getElementById('vb9');
+      if (el) el.classList.add('show');
+    }, 4000);
+    // Ver si el video termina para pasar a S10
+    watchVideoEnd('videoCierre', () => goTo(10));
+  }
+
+  // ===== CIERRE S10 =====
+  function startCierre() {
+    setTimeout(() => {
+      const el = document.getElementById('txtCierre1');
+      if (el) { el.style.opacity = '1'; el.classList.add('fade-in'); }
+    }, 1500);
+    setTimeout(() => {
+      const el = document.getElementById('txtCierre2');
+      if (el) { el.style.opacity = '1'; el.classList.add('fade-in'); }
+    }, 3500);
+    // Después del texto final → WhatsApp
+    watchVideoEnd('videoFinal', () => setTimeout(() => goTo(11), 2000));
+    setTimeout(() => goTo(11), 10000);
+  }
+
+  // ===== WHATSAPP S11 =====
   const waAudios = [
     { time: '07:09', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio1.mp3' },
     { time: '07:10', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio2.mp3' },
@@ -1499,315 +1065,119 @@
     { time: '07:11', url: 'https://wwrmotorszonadeatraccion.b-cdn.net/audio4.mp3' },
   ];
 
-  // Pre-instanciar audios para que el navegador los considere listos desde el primer gesto
-  let waAudioObjects = [];
-  function preloadWaAudios() {
-    waAudioObjects = waAudios.map(a => {
-      const audio = new Audio(a.url);
-      audio.preload = 'auto';
-      audio.load();
-      return audio;
-    });
-  }
-
-  function makeWaBubble(timeStr, audioObj) {
-    const div = document.createElement('div');
-    div.className = 'wa-bubble';
-    const heights = [24,18,32,14,28,20,36,16,22,30,12,26];
-    let bars = '';
-    for(let i=0;i<12;i++){
-      bars += `<div class="wa-wave-bar" style="height:${heights[i]}px"></div>`;
-    }
-    div.innerHTML = `
-      <div class="wa-play-btn" style="cursor:pointer;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)"><polygon points="5,3 19,12 5,21"/></svg>
-      </div>
-      <div class="wa-waveform">${bars}</div>
-      <div class="wa-time">${timeStr}</div>
-    `;
-    if (audioObj) {
-      div.querySelector('.wa-play-btn').addEventListener('click', () => {
-        audioObj.currentTime = 0;
-        audioObj.play().catch(e => console.log('Audio error:', e));
-      });
-    }
-    return div;
-  }
-
-  function startWaSequence() {
+  function startWa() {
     const container = document.getElementById('waMessages');
     container.innerHTML = '';
     const status = document.getElementById('waStatus');
     let i = 0;
 
     function addNext() {
-      if (i >= waAudios.length) {
-        setTimeout(() => goTo(7), 1200);
-        return;
-      }
-
+      if (i >= waAudios.length) { setTimeout(() => goTo(12), 1200); return; }
       status.textContent = 'grabando audio...';
-      status.className = 'wa-status typing';
-
-      const audioObj = waAudioObjects[i] || new Audio(waAudios[i].url);
-      const idx = i;
-      i++;
-
-      const onAudioDone = () => {
-        setTimeout(addNext, 600);
-      };
+      const audioUrl = waAudios[i].url;
+      const timeStr = waAudios[i].time;
+      const idx = i; i++;
 
       setTimeout(() => {
         status.textContent = 'en línea';
-        status.className = 'wa-status';
-
-        const bubble = makeWaBubble(waAudios[idx].time, audioObj);
+        const bubble = makeWaBubble(timeStr, audioUrl);
         container.appendChild(bubble);
         setTimeout(() => bubble.classList.add('show'), 50);
         container.scrollTop = container.scrollHeight;
-
-        audioObj.currentTime = 0;
-        audioObj.play()
-          .then(() => {
-            audioObj.addEventListener('ended', onAudioDone, { once: true });
-          })
-          .catch(e => {
-            console.log('Audio WA bloqueado:', e);
-            setTimeout(onAudioDone, 3000);
-          });
+        const a = playAudio(audioUrl);
+        a.addEventListener('ended', () => setTimeout(addNext, 600), { once: true });
+        setTimeout(addNext, 5000); // fallback
       }, 1200);
     }
-
     setTimeout(addNext, 800);
   }
 
-  function setLockTime() {
-    // Pantalla de transición: spinner 2s, luego aparece botón
-    const spinner = document.getElementById('s7Spinner');
-    const btn = document.getElementById('s7Btn');
-    if (spinner) spinner.style.display = 'flex';
-    if (btn) btn.style.display = 'none';
+  function makeWaBubble(timeStr, audioUrl) {
+    const div = document.createElement('div');
+    div.style.cssText = 'background:#005c4b;border-radius:8px 0 8px 8px;padding:10px 12px;max-width:85%;align-self:flex-end;font-family:sans-serif;font-size:14px;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(10px);transition:all 0.4s ease;';
+    const heights = [24,18,32,14,28,20,36,16,22,30,12,26];
+    let bars = '';
+    for(let i=0;i<12;i++) bars += `<div style="flex:1;background:rgba(255,255,255,0.3);border-radius:1px;height:${heights[i]}px;"></div>`;
+    div.innerHTML = `
+      <div onclick="playAudio('${audioUrl}')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)"><polygon points="5,3 19,12 5,21"/></svg>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;gap:2px;height:28px;">${bars}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.4);white-space:nowrap;">${timeStr}</div>
+    `;
+    return div;
+  }
+
+  // ===== SELECTOR DE MOTO =====
+  function seleccionarMoto(tipo) {
+    document.querySelectorAll('.moto-card').forEach(c => c.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+
+    const data = motoData[tipo];
+    if (!data) return;
+
     setTimeout(() => {
-      if (spinner) spinner.style.display = 'none';
-      if (btn) { btn.style.display = 'flex'; }
-    }, 2000);
+      document.getElementById('motoSeleccionada').textContent = data.nombre;
+      document.getElementById('imgAntes').src = data.antes;
+      document.getElementById('imgDespues').src = data.despues;
+      goTo(13);
+    }, 400);
   }
 
-  // ===== TIKTOK LIKES =====
-  let ttLikeCount = 1200;
-  let ttLiked = false;
-  let ttLikeInterval = null;
-
-  function ttStartLikes() {
-    // Sube de a 1 cada 1.5-3s simulando likes en tiempo real
-    ttLikeInterval = setInterval(() => {
-      ttLikeCount += Math.floor(Math.random() * 3) + 1;
-      document.getElementById('ttLikeCount').textContent = ttFormatCount(ttLikeCount);
-      // Mini animación en el número
-      const el = document.getElementById('ttLikeCount');
-      el.style.transform = 'scale(1.3)';
-      el.style.color = '#ff2d55';
-      setTimeout(() => { el.style.transform = 'scale(1)'; el.style.color = '#fff'; }, 300);
-    }, Math.random() * 1500 + 1500);
-  }
-
-  function ttStopLikes() {
-    if (ttLikeInterval) { clearInterval(ttLikeInterval); ttLikeInterval = null; }
-  }
-
-  function ttFormatCount(n) {
-    if (n >= 1000) return (n / 1000).toFixed(1).replace('.0','') + 'K';
-    return n;
-  }
-
-  function ttToggleLike() {
-    ttLiked = !ttLiked;
-    const icon = document.getElementById('ttLikeIcon');
-    if (ttLiked) {
-      ttLikeCount++;
-      icon.textContent = '❤️';
-      icon.style.transform = 'scale(1.4)';
-      setTimeout(() => icon.style.transform = 'scale(1)', 250);
-    } else {
-      ttLikeCount--;
-      icon.textContent = '🤍';
-    }
-    document.getElementById('ttLikeCount').textContent = ttFormatCount(ttLikeCount);
-  }
-
-  function updateTiempo() {
-    const mins = Math.max(1, Math.round((Date.now() - startTime) / 60000));
-    document.getElementById('tiempoNum').textContent = mins;
-  }
-
-  // ===== IA FOTO CON REPLICATE =====
-  const REPLICATE_TOKEN = '';
-  const ESPEJO_REF = 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-17%20at%2014.24.27.jpeg';
-
-  let iaOriginalDataUrl = null;
-
-  function iaShow(step) {
-    ['ia-step1','ia-step2','ia-step3','ia-step4'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    const target = document.getElementById(step);
-    if (target) target.style.display = 'flex';
-  }
-
-  function iaReset() {
-    iaOriginalDataUrl = null;
-    document.getElementById('fileInput').value = '';
-    iaShow('ia-step1');
-  }
-
-  async function iaHandlePhoto(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-      iaOriginalDataUrl = e.target.result;
-      document.getElementById('ia-preview').src = iaOriginalDataUrl;
-      document.getElementById('ia-before').src = iaOriginalDataUrl;
-      iaShow('ia-step2');
-      await iaProcesar(iaOriginalDataUrl);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  async function iaProcesar(imageDataUrl) {
-    const statusEl = document.getElementById('ia-status');
-    const msgs = ['Analizando moto...', 'Detectando manillar...', 'Aplicando espejos...', 'Ajustando detalles...'];
-    let mi = 0;
-    const msgInterval = setInterval(() => {
-      mi = (mi + 1) % msgs.length;
-      if (statusEl) statusEl.textContent = msgs[mi];
-    }, 4000);
-
-    try {
-      // PASO 1: Subir imagen a imgBB para obtener URL pública
-      if (statusEl) statusEl.textContent = 'Subiendo foto...';
-      const base64Data = imageDataUrl.split(',')[1];
-      const formData = new FormData();
-      formData.append('key', '4cbc85d2849183462fda403fe8d8ba17');
-      formData.append('image', base64Data);
-
-      const imgbbRes = await fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const imgbbData = await imgbbRes.json();
-      if (!imgbbData.success) throw new Error('Error subiendo imagen a imgBB');
-      const imageUrl = imgbbData.data.url;
-
-      // PASO 2: Enviar a Replicate con multi-image-kontext-pro (3 referencias)
-      if (statusEl) statusEl.textContent = 'Aplicando espejos...';
-      const startRes = await fetch('/api/replicate', {
-        method: 'POST',
-        headers: {
-          
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'flux-kontext-apps/multi-image-kontext-pro',
-          input: {
-            input_image_1: 'https://wwrmotorszonadeatraccion.b-cdn.net/%231%20Mas%20vendido.png',
-            input_image_2: 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-17%20at%2014.24.27.jpeg',
-            input_image_3: 'https://wwrmotorszonadeatraccion.b-cdn.net/WhatsApp%20Image%202026-06-18%20at%2022.01.52%20(1).jpeg',
-            input_image_4: imageUrl,
-            prompt: `The uploaded image (image 4) is a customer's motorcycle. Images 1, 2 and 3 are reference photos showing the exact mirrors to install. Your task is to install those mirrors onto the motorcycle in image 4. Use the reference images to reproduce the exact mirror design, shape, proportions, folding mechanism, mounting arm, texture and matte black finish. Instructions: detect the motorcycle handlebars. Install one mirror on the left side and one mirror on the right side. Position the mirrors exactly where real motorcycle mirrors would be mounted. Match the motorcycle perspective and camera angle. Match the lighting, shadows and reflections of the original photo. Maintain realistic scale relative to the handlebars. Keep the mirrors symmetrical. Preserve the customer's motorcycle exactly as photographed. Do not modify: motorcycle model, fuel tank, fairings, headlight, handlebars, wheels, suspension, exhaust, colors, stickers, background, environment, rider. Only add the provided mirrors to the motorcycle. The final image must look like a real photograph of the customer's motorcycle with the mirrors already installed. Photorealistic.`,
-            output_format: 'jpg',
-            output_quality: 95
-          }
-        })
-      });
-
-      if (!startRes.ok) throw new Error('Error iniciando predicción');
-      const prediction = await startRes.json();
-
-      // PASO 3: Polling hasta que termine
-      let result = null;
-      for (let i = 0; i < 60; i++) {
-        await new Promise(r => setTimeout(r, 2000));
-        const pollRes = await fetch('/api/replicate?id=' + prediction.id, {
-          
-        });
-        const poll = await pollRes.json();
-        if (poll.status === 'succeeded') {
-          result = Array.isArray(poll.output) ? poll.output[0] : poll.output;
-          break;
-        }
-        if (poll.status === 'failed') throw new Error('Predicción fallida');
-      }
-
-      clearInterval(msgInterval);
-      if (!result) throw new Error('Timeout');
-
-      document.getElementById('ia-after').src = result;
-      iaShow('ia-step3');
-      iaInitSlider();
-
-    } catch(err) {
-      clearInterval(msgInterval);
-      console.log('Error IA:', err);
-      iaShow('ia-step4');
-    }
-  }
-
-  function iaInitSlider() {
-    const container = document.getElementById('ia-compare');
-    const divider = document.getElementById('ia-divider');
-    const beforeClip = document.getElementById('ia-before-clip');
-    const beforeImg = document.getElementById('ia-before');
+  // ===== SLIDER ANTES/DESPUÉS =====
+  function initSlider() {
+    const container = document.getElementById('compareBox');
+    const afterClip = document.getElementById('afterClip');
+    const divider = document.getElementById('compareDivider');
     let dragging = false;
+
+    // Animación entrada: empieza en 0% y va a 50%
+    afterClip.style.width = '0%';
+    divider.style.left = '0%';
+    setTimeout(() => {
+      afterClip.style.width = '50%';
+      divider.style.left = '50%';
+    }, 300);
 
     function setPos(x) {
       const rect = container.getBoundingClientRect();
       let pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
-      beforeClip.style.width = (pct * 100) + '%';
-      beforeImg.style.width = rect.width + 'px';
+      afterClip.style.width = (pct * 100) + '%';
+      afterClip.style.transition = 'none';
       divider.style.left = (pct * 100) + '%';
+      divider.style.transition = 'none';
+      const img = document.getElementById('imgDespues');
+      if (img) img.style.width = rect.width + 'px';
     }
 
     divider.addEventListener('mousedown', () => dragging = true);
     window.addEventListener('mouseup', () => dragging = false);
-    window.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
-
+    window.addEventListener('mousemove', e => { if(dragging) setPos(e.clientX); });
     container.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, {passive:true});
     window.addEventListener('touchend', () => dragging = false);
-    window.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX); }, {passive:true});
+    window.addEventListener('touchmove', e => { if(dragging) setPos(e.touches[0].clientX); }, {passive:true});
   }
 
-  function handleUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('uploadZone').style.display = 'none';
-      const result = document.getElementById('iaResult');
-      result.classList.add('show');
-      const img = document.getElementById('resultImg');
-      img.src = e.target.result;
-      setTimeout(() => {
-        document.getElementById('resultDone').style.display = 'block';
-        document.getElementById('btnOferta').style.display = 'block';
-      }, 2500);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // Auto-advance screen 2 after 3s
-  document.getElementById('s1').addEventListener('transitionend', function(){});
-  
-  const origGoTo = goTo;
-  window.goTo = function(n) {
-    origGoTo(n);
-    if (n === 2) {
-      const v = document.getElementById('videoS2');
-      if (v) { v.muted = false; v.currentTime = 0; v.play(); }
-      setTimeout(() => goTo(3), 15000);
+  // ===== OPCIÓN VERIFICACIÓN =====
+  function selectOption(btn, isCorrect) {
+    if (isCorrect) {
+      btn.style.background = 'rgba(255,68,34,0.2)';
+      btn.style.borderColor = '#ff4422';
+      setTimeout(() => goTo(15), 700);
+    } else {
+      btn.style.opacity = '0.3';
+      setTimeout(() => { btn.style.opacity = '1'; }, 600);
     }
+  }
+
+  // ===== S7 AUTO-ADVANCE =====
+  // S7 avanza a S8 automático después de 4s
+  const _orig = onEnterScreen;
+  // Override para S7
+  const origOnEnter = onEnterScreen;
+  window.onEnterScreen = function(n) {
+    origOnEnter(n);
+    if (n === 7) setTimeout(() => goTo(8), 4000);
   };
 
   updateProgress(1);
