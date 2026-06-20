@@ -79,8 +79,19 @@
 </head>
 <body>
 
+<!-- ===== LOADING ===== -->
+<div class="screen active" id="s0">
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;gap:2rem;">
+    <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;">W W R &nbsp; M O T O R S</div>
+    <div style="width:200px;height:2px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+      <div id="loadBar" style="height:100%;background:#ff4422;width:0%;transition:width 0.3s ease;"></div>
+    </div>
+    <div id="loadText" style="font-size:10px;letter-spacing:4px;color:rgba(255,255,255,0.3);text-transform:uppercase;">CARGANDO EXPERIENCIA...</div>
+  </div>
+</div>
+
 <!-- ===== S1: INICIO ===== -->
-<div class="screen active" id="s1">
+<div class="screen" id="s1">
   <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80') center/cover no-repeat;z-index:0;"></div>
   <div class="overlay"></div>
   <div style="position:relative;z-index:2;width:100%;height:100dvh;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding-top:3rem;padding-bottom:3rem;">
@@ -96,10 +107,25 @@
       </div>
     </div>
     <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
-      <button class="btn-primary" onclick="goTo(2)">
+      <button class="btn-primary" onclick="iniciarCuenta()">
         <span>ENTRAR A LA EXPERIENCIA</span>
         <span>→</span>
       </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== S1B: COUNTDOWN ===== -->
+<div class="screen" id="s1b">
+  <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80') center/cover no-repeat;z-index:0;"></div>
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.75);z-index:1;"></div>
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;gap:1.5rem;">
+    <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;">W W R &nbsp; M O T O R S</div>
+    <div style="font-size:13px;letter-spacing:4px;color:rgba(255,255,255,0.6);text-transform:uppercase;">LA EXPERIENCIA INICIA EN</div>
+    <div id="countdown" style="font-size:120px;font-weight:900;line-height:1;color:#ff4422;font-family:'Georgia',serif;">5</div>
+    <div style="width:260px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+      <div id="countBar" style="height:100%;background:#ff4422;width:0%;transition:width 0.1s linear;"></div>
     </div>
   </div>
 </div>
@@ -112,7 +138,6 @@
 </div>
 
 <script>
-  let currentScreen = 1;
 
   function goTo(n) {
     const prev = document.getElementById('s' + currentScreen);
@@ -134,7 +159,12 @@
         goTo(3);
       }, { once: true });
     }
-    if (n === 3) startVibration();
+    if (n === 3) {
+      startVibration();
+      // Precargar video2 mientras el usuario ve la pantalla de llamada
+      const v2 = document.getElementById('video2');
+      if (v2) { v2.preload = 'auto'; v2.load(); }
+    }
   }
 
   let vibAudio = null;
@@ -177,6 +207,106 @@
       }
     }
   };
+
+
+
+  function iniciarCuenta() {
+    // Empezar a precargar videos
+    videosToLoad.forEach(({ id }) => {
+      const v = document.getElementById(id);
+      if (v && !v.src) v.load();
+    });
+
+    // Ir a pantalla countdown
+    const prev = document.getElementById('s' + currentScreen);
+    const next = document.getElementById('s1b');
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 900);
+    next.classList.add('active');
+    currentScreen = '1b';
+
+    // Countdown: muestra 5,4,3 pero solo espera 3 segundos
+    let display = 5;
+    const el = document.getElementById('countdown');
+    const bar = document.getElementById('countBar');
+    const total = 3000; // 3 segundos reales
+    const start = Date.now();
+
+    // Barra progresa en 3s
+    bar.style.transition = 'width ' + total + 'ms linear';
+    setTimeout(() => bar.style.width = '100%', 50);
+
+    // Números bajan de 5 a 1 en 3s
+    const nums = [5, 4, 3, 2, 1];
+    nums.forEach((n, i) => {
+      setTimeout(() => {
+        if (el) el.textContent = n;
+      }, (i / nums.length) * total);
+    });
+
+    // Arrancar video al terminar
+    setTimeout(() => {
+      goTo(2);
+    }, total);
+  }
+
+  // ===== PRELOAD TODOS LOS VIDEOS =====
+  const videosToLoad = [
+    { id: 'video1', src: 'https://wwrmotorszonadeatraccion.b-cdn.net/videomain.mp4' },
+    { id: 'video2', src: 'https://wwrmotorszonadeatraccion.b-cdn.net/video%20despues%20de%20boton%20de%20llamada.mp4' },
+  ];
+
+  let currentScreen = 0;
+
+  function preloadVideos() {
+    let loaded = 0;
+    const total = videosToLoad.length;
+    const bar = document.getElementById('loadBar');
+    const txt = document.getElementById('loadText');
+
+    videosToLoad.forEach(({ id, src }) => {
+      const v = document.getElementById(id);
+      if (!v) { loaded++; return; }
+      v.preload = 'auto';
+      v.src = src;
+
+      const onProgress = () => {
+        if (v.buffered.length > 0 && v.duration) {
+          const pct = (v.buffered.end(0) / v.duration);
+          const overall = ((loaded + pct) / total) * 100;
+          if (bar) bar.style.width = Math.min(overall, 99) + '%';
+        }
+      };
+
+      const onReady = () => {
+        loaded++;
+        const overall = (loaded / total) * 100;
+        if (bar) bar.style.width = overall + '%';
+        if (loaded >= total) allLoaded();
+      };
+
+      v.addEventListener('progress', onProgress);
+      v.addEventListener('canplaythrough', onReady, { once: true });
+      v.addEventListener('error', onReady, { once: true }); // si falla igual continua
+      v.load();
+    });
+
+    // Fallback: si tarda más de 8s arranca igual
+    setTimeout(() => { if (currentScreen === 0) allLoaded(); }, 8000);
+  }
+
+  function allLoaded() {
+    if (currentScreen !== 0) return;
+    const bar = document.getElementById('loadBar');
+    const txt = document.getElementById('loadText');
+    if (bar) bar.style.width = '100%';
+    if (txt) txt.textContent = '¡LISTO!';
+    setTimeout(() => goTo(1), 400);
+  }
+
+  // Arrancar precarga
+  preloadVideos();
 
 </script>
 
