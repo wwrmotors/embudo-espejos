@@ -5,7 +5,6 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: 'Missing id' });
-
     const response = await fetch(`https://api.replicate.com/v1/predictions/${id}`, {
       headers: { 'Authorization': `Token ${token}` }
     });
@@ -13,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   }
 
-  // POST: crear nueva predicción
+  // POST: solo crear la predicción y devolver ID inmediatamente
   if (req.method === 'POST') {
     try {
       const body = req.body;
@@ -26,6 +25,7 @@ export default async function handler(req, res) {
         body: JSON.stringify(body)
       });
       const data = await response.json();
+      // Devolver inmediatamente sin esperar resultado
       return res.status(200).json(data);
     } catch(err) {
       return res.status(500).json({ error: err.message });
