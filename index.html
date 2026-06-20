@@ -44,8 +44,8 @@
   .overlay {
     position:absolute;
     inset:0;
+    background:rgba(0,0,0,0.55);
     z-index:1;
-    background:rgba(0,0,0,0.45);
   }
 
   .brand {
@@ -55,17 +55,6 @@
     text-transform:uppercase;
   }
 
-  /* ===== PROGRESS ===== */
-  .progress-bar {
-    position:fixed;
-    top:0; left:0;
-    height:2px;
-    background:#ff4422;
-    transition:width 0.5s ease;
-    z-index:100;
-  }
-
-  /* ===== BTN PRIMARY ===== */
   .btn-primary {
     width:100%;
     max-width:360px;
@@ -85,417 +74,62 @@
   }
   .btn-primary:active { background:#aa1800; }
 
-  .btn-secondary {
-    font-size:10px;
-    letter-spacing:3px;
-    color:rgba(255,255,255,0.35);
-    text-transform:uppercase;
-    background:none;
-    border:none;
-    cursor:pointer;
-    text-decoration:underline;
-    padding:8px;
-    margin-top:0.5rem;
-  }
-
-  /* ===== S1 ===== */
-  #s1 .headline {
-    font-size:clamp(30px,9vw,46px);
-    font-weight:900;
-    line-height:1.1;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    margin-bottom:0.5rem;
-  }
-  #s1 .headline span { color:#ff4422; font-style:italic; }
-
-  .volumen {
-    font-size:11px;
-    letter-spacing:4px;
-    color:rgba(255,255,255,0.5);
-    margin-bottom:3rem;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .vol-icon { animation:pulse 1.5s infinite; }
-
-  /* ===== S2 LLAMADA ===== */
-  .call-frame {
-    position:absolute;
-    inset:8px;
-    border:1px solid rgba(255,255,255,0.08);
-    z-index:2;
-    pointer-events:none;
-  }
-  .call-corner {
-    position:absolute;
-    width:16px; height:16px;
-    border-color:rgba(255,255,255,0.3);
-    border-style:solid;
-  }
-  .call-corner.tl{top:-1px;left:-1px;border-width:1px 0 0 1px;}
-  .call-corner.tr{top:-1px;right:-1px;border-width:1px 1px 0 0;}
-  .call-corner.bl{bottom:-1px;left:-1px;border-width:0 0 1px 1px;}
-  .call-corner.br{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
-
-  .avatar-circle {
-    width:110px; height:110px;
-    border-radius:50%;
-    border:2px solid rgba(255,255,255,0.15);
-    overflow:hidden;
-    margin-bottom:1.2rem;
-    background:#1a1a1a;
-  }
-  .avatar-circle img { width:100%; height:100%; object-fit:cover; }
-
-  .caller-handle { font-size:22px; font-weight:700; font-style:italic; margin-bottom:0.3rem; }
-  .caller-name { font-size:12px; letter-spacing:5px; color:rgba(255,255,255,0.5); text-transform:uppercase; margin-bottom:0.5rem; }
-
-  .incoming-label {
-    font-size:11px; letter-spacing:5px; color:#4ade80;
-    text-transform:uppercase; margin-bottom:2.5rem;
-    animation:blink 1.2s infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .call-btn {
-    width:90px; height:90px;
-    border-radius:50%;
-    background:#16a34a;
-    border:4px solid #22c55e;
-    cursor:pointer;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    gap:4px;
-    animation:ring 0.5s infinite alternate;
-  }
-  .call-btn:active { transform:scale(0.93); }
-  @keyframes ring {
-    from{transform:scale(1);box-shadow:0 0 0 0 rgba(34,197,94,0.6);}
-    to{transform:scale(1.08);box-shadow:0 0 0 14px rgba(34,197,94,0);}
-  }
-  .call-btn svg { width:36px; height:36px; fill:#fff; }
-  .call-btn-label { font-size:10px; font-weight:900; letter-spacing:2px; color:#fff; text-transform:uppercase; }
-
-  /* ===== BOTON CONTINUAR SOBRE VIDEO ===== */
-  .btn-over-video {
-    position:absolute;
-    bottom:3rem;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:10;
-    width:calc(100% - 3rem);
-    max-width:360px;
-    padding:18px 24px;
-    background:#cc2200;
-    color:#fff;
-    border:none;
-    font-family:'Georgia',serif;
-    font-size:13px;
-    letter-spacing:4px;
-    text-transform:uppercase;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    transition:background 0.2s, opacity 0.5s;
-    opacity:0;
-    pointer-events:none;
-  }
-  .btn-over-video.show { opacity:1; pointer-events:all; }
-  .btn-over-video:active { background:#aa1800; }
-
-  /* ===== WAVE ===== */
-  .wave-bar {
-    width:3px; background:#ff4422; border-radius:2px;
-    animation:wave 0.8s ease-in-out infinite;
-  }
-  .wave-bar:nth-child(1){animation-delay:0s}
-  .wave-bar:nth-child(2){animation-delay:0.1s}
-  .wave-bar:nth-child(3){animation-delay:0.2s}
-  .wave-bar:nth-child(4){animation-delay:0.1s}
-  .wave-bar:nth-child(5){animation-delay:0s}
-  .wave-bar:nth-child(6){animation-delay:0.15s}
-  .wave-bar:nth-child(7){animation-delay:0.25s}
-  .wave-bar:nth-child(8){animation-delay:0.1s}
-  @keyframes wave { 0%,100%{height:8px} 50%{height:36px} }
-
-  @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
 
-<div class="progress-bar" id="progressBar" style="width:0%"></div>
-
-<!-- ===== S1: GANCHO ===== -->
+<!-- ===== S1: INICIO ===== -->
 <div class="screen active" id="s1">
-  <video class="bg-video" autoplay muted loop playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/videomain.mp4"
-    poster="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80"
-    onerror="this.style.display='none'"></video>
+  <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80') center/cover no-repeat;z-index:0;"></div>
   <div class="overlay"></div>
   <div style="position:relative;z-index:2;width:100%;height:100dvh;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding-top:3rem;padding-bottom:3rem;">
     <div class="brand">W W R &nbsp; M O T O R S</div>
     <div style="width:100%;">
-      <h1 class="headline">¿Tu moto se ve<br>como <span>debe</span><br>verse?</h1>
+      <h1 style="font-size:clamp(30px,9vw,46px);font-weight:900;line-height:1.1;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;">
+        ¿Tu moto se ve<br>como <span style="color:#ff4422;font-style:italic;">debe</span><br>verse?
+      </h1>
       <div style="height:1rem;"></div>
-      <div class="volumen">
-        <span class="vol-icon">🔊</span>
+      <div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:8px;margin-bottom:3rem;">
+        <span style="animation:pulse 1.5s infinite;">🔊</span>
         <span>SUBE EL VOLUMEN</span>
       </div>
     </div>
     <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
-      <button class="btn-primary" onclick="arrancar()">
+      <button class="btn-primary" onclick="goTo(2)">
         <span>ENTRAR A LA EXPERIENCIA</span>
         <span>→</span>
       </button>
-      <button class="btn-secondary" onclick="goTo(5)">Ya vi esto antes</button>
     </div>
   </div>
 </div>
 
-<!-- ===== S2: LLAMADA ENTRANTE ===== -->
+<!-- ===== S2: VIDEO 1 ===== -->
 <div class="screen" id="s2">
-  <div class="call-frame">
-    <div class="call-corner tl"></div><div class="call-corner tr"></div>
-    <div class="call-corner bl"></div><div class="call-corner br"></div>
-  </div>
-  <div style="position:absolute;inset:0;background:url('https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg') center/cover no-repeat;z-index:0;"></div>
-  <div class="overlay" style="background:rgba(0,0,0,0.65)"></div>
-  <div style="position:relative;z-index:2;width:100%;height:100dvh;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;">
-    <div class="brand" style="margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
-    <div class="avatar-circle" style="width:120px;height:120px;">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" alt="El Piloto">
-    </div>
-    <div class="caller-handle" style="margin-top:1.2rem;">@wwrmotors_oficial</div>
-    <div class="caller-name">E L &nbsp; P I L O T O</div>
-    <div class="incoming-label">L L A M A D A &nbsp; E N T R A N T E . . .</div>
-    <button class="call-btn" onclick="contestar()" aria-label="Contestar">
-      <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
-      <div class="call-btn-label">CONTESTAR</div>
-    </button>
-  </div>
-</div>
-
-<!-- ===== S3: VIDEO HISTORIA (después de contestar) ===== -->
-<div class="screen" id="s3">
-  <video class="bg-video" id="videoHistoria" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20despues%20de%20boton%20de%20llamada.mp4"
+  <video class="bg-video" id="video1" playsinline
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/videomain.mp4"
     onerror="this.style.display='none'"></video>
-  <div class="overlay" style="background:rgba(0,0,0,0.15)"></div>
-  <!-- Header llamada activa -->
-  <div style="position:absolute;top:0;left:0;right:0;padding:3rem 1.5rem 1rem;display:flex;align-items:center;gap:12px;z-index:3;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent);">
-    <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;border:1px solid rgba(255,255,255,0.2);">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
-    </div>
-    <div style="flex:1;">
-      <div style="font-size:15px;font-weight:600;">@wwrmotors_oficial</div>
-      <div style="font-size:11px;color:#4ade80;letter-spacing:2px;">EN LLAMADA</div>
-    </div>
-    <div id="callTimer" style="font-size:13px;letter-spacing:3px;color:#4ade80;">00:01</div>
-  </div>
-  <!-- Waveform -->
-  <div style="position:absolute;bottom:8rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;z-index:3;">
-    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-    <div class="wave-bar"></div><div class="wave-bar"></div>
-  </div>
-  <!-- Botón aparece cuando termina el video -->
-  <button class="btn-over-video" id="btnTodoEvoluciono" onclick="goTo(4)">
-    <span>TODO EVOLUCIONÓ →</span>
-    <span>▶</span>
-  </button>
-</div>
-
-<!-- ===== S4: VIDEO TODO EVOLUCIONÓ ===== -->
-<div class="screen" id="s4">
-  <video class="bg-video" id="videoEvo" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/TODO%20EVOLUCIONO.mp4"
-    onerror="this.style.display='none'"></video>
-  <div class="overlay" style="background:rgba(0,0,0,0.1)"></div>
-  <!-- Botón aparece cuando termina -->
-  <button class="btn-over-video" id="btnVerEspejos" onclick="goTo(5)">
-    <span>VER ESPEJOS RETROVISORES</span>
-    <span>→</span>
-  </button>
-</div>
-
-<!-- ===== S5: VIDEO ESPEJOS (TikTok) ===== -->
-<div class="screen" id="s5">
-  <video class="bg-video" id="videoEspejos" playsinline loop
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4"
-    onerror="this.style.display='none'"></video>
-  <div class="overlay" style="background:rgba(0,0,0,0.2)"></div>
-  <div style="position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);z-index:10;width:calc(100% - 3rem);max-width:360px;display:flex;flex-direction:column;align-items:center;gap:1rem;">
-    <button class="btn-primary" style="width:100%;" onclick="goTo(6)">
-      <span>QUIERO ESTOS ESPEJOS</span>
-      <span>→</span>
-    </button>
-  </div>
-</div>
-
-<!-- ===== S6: OFERTA ===== -->
-<div class="screen" id="s6">
-  <div style="position:relative;z-index:2;width:100%;height:100dvh;padding:3.5rem 1.5rem 3rem;display:flex;flex-direction:column;align-items:center;overflow-y:auto;">
-    <div class="brand" style="margin-bottom:1.5rem;">W W R &nbsp; M O T O R S</div>
-    <div style="font-size:10px;letter-spacing:4px;color:#4ade80;text-transform:uppercase;margin-bottom:1rem;">✓ ACTO FINAL — TU MOTO TE ESPERA</div>
-    <h2 style="font-size:clamp(28px,8vw,40px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:2rem;text-align:center;">Los espejos que<br>tu moto<br><span style="color:#ff4422;font-style:italic;">merece.</span></h2>
-
-    <div style="width:100%;max-width:360px;border:1px solid rgba(255,255,255,0.1);padding:1.5rem;margin-bottom:1rem;">
-      <div style="font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:0.5rem;">LOTE 1 — OFERTA DE HOY</div>
-      <div style="font-size:16px;color:rgba(255,255,255,0.3);text-decoration:line-through;margin-bottom:0.25rem;">$89.900 COP</div>
-      <div style="font-size:44px;font-weight:900;line-height:1;margin-bottom:0.25rem;">$59.900</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;">COP · PAGO CONTRA ENTREGA</div>
-    </div>
-
-    <div style="width:100%;max-width:360px;border:1px solid rgba(255,68,34,0.3);background:rgba(255,68,34,0.06);padding:1rem 1.25rem;font-size:13px;color:rgba(255,255,255,0.7);text-align:center;margin-bottom:1.5rem;">
-      <strong style="color:#ff4422;">⚠ ATENCIÓN:</strong> Oferta válida solo hoy.<br>Después sube a precio regular.
-    </div>
-
-    <div style="width:100%;max-width:360px;margin-bottom:1.5rem;">
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#4ade80;font-size:16px;">✓</span> Espejo retráctil tipo ala — diseño premium</div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#4ade80;font-size:16px;">✓</span> Instalación en menos de 5 minutos</div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#4ade80;font-size:16px;">✓</span> Compatible con la mayoría de motos</div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#4ade80;font-size:16px;">✓</span> Envío gratis a toda Colombia</div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#4ade80;font-size:16px;">✓</span> Pagas cuando lo recibes — 0 riesgo</div>
-    </div>
-
-    <button style="width:100%;max-width:360px;padding:20px 24px;background:#16a34a;color:#fff;border:none;font-family:'Georgia',serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;" onclick="window.location.href='https://wwrmotors.com'">
-      <span>QUIERO LOS ESPEJOS →</span>
-    </button>
-    <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:3rem;">📦 ENVÍO GRATIS · PAGO AL RECIBIR</div>
-  </div>
 </div>
 
 <script>
   let currentScreen = 1;
-  const TOTAL = 6;
 
   function goTo(n) {
     const prev = document.getElementById('s' + currentScreen);
     const next = document.getElementById('s' + n);
-    if (!next || n === currentScreen) return;
+    if (!next) return;
     prev.classList.remove('active');
     prev.classList.add('exit');
     setTimeout(() => prev.classList.remove('exit'), 900);
     next.classList.add('active');
     currentScreen = n;
-    updateProgress(n);
-    onEnter(n);
-  }
-
-  function updateProgress(n) {
-    const pct = ((n - 1) / (TOTAL - 1)) * 100;
-    document.getElementById('progressBar').style.width = pct + '%';
-  }
-
-  function onEnter(n) {
-    if (n === 3) startS3();
-    if (n === 4) startS4();
-    if (n === 5) startS5();
-  }
-
-  // ===== ARRANCAR =====
-  function arrancar() {
-    startVibration();
-    goTo(2);
-  }
-
-  // ===== CONTESTAR =====
-  function contestar() {
-    stopVibration();
-    goTo(3);
-  }
-
-  // ===== VIBRACIÓN =====
-  let vibAudio = null;
-  function startVibration() {
-    if (navigator.vibrate) {
-      const pat = [];
-      for(let i=0;i<20;i++) pat.push(400,500);
-      navigator.vibrate(pat);
-    }
-    try {
-      vibAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
-      vibAudio.loop = true;
-      vibAudio.volume = 1.0;
-      vibAudio.play().catch(()=>{});
-    } catch(e){}
-  }
-  function stopVibration() {
-    if (navigator.vibrate) navigator.vibrate(0);
-    if (vibAudio) { vibAudio.pause(); vibAudio.currentTime = 0; }
-  }
-
-  // ===== S3: VIDEO HISTORIA =====
-  let callTimerInterval = null;
-  function startS3() {
-    // Reproducir video con sonido
-    const v = document.getElementById('videoHistoria');
-    if (v) {
-      v.muted = false;
-      v.currentTime = 0;
-      v.play().catch(() => { v.muted = true; v.play(); });
-    }
-
-    // Timer llamada
-    let secs = 1;
-    const timerEl = document.getElementById('callTimer');
-    clearInterval(callTimerInterval);
-    callTimerInterval = setInterval(() => {
-      secs++;
-      const m = String(Math.floor(secs/60)).padStart(2,'0');
-      const s = String(secs%60).padStart(2,'0');
-      if (timerEl) timerEl.textContent = m+':'+s;
-    }, 1000);
-
-    // Mostrar botón cuando termina el video
-    if (v) {
-      v.addEventListener('ended', () => {
-        clearInterval(callTimerInterval);
-        const btn = document.getElementById('btnTodoEvoluciono');
-        if (btn) btn.classList.add('show');
-      }, { once: true });
-      // Fallback: mostrar botón a los 60s
-      setTimeout(() => {
-        const btn = document.getElementById('btnTodoEvoluciono');
-        if (btn) btn.classList.add('show');
-      }, 60000);
-    }
-  }
-
-  // ===== S4: VIDEO TODO EVOLUCIONÓ =====
-  function startS4() {
-    const v = document.getElementById('videoEvo');
-    if (v) {
-      v.muted = false;
-      v.currentTime = 0;
-      v.play().catch(() => { v.muted = true; v.play(); });
-      v.addEventListener('ended', () => {
-        const btn = document.getElementById('btnVerEspejos');
-        if (btn) btn.classList.add('show');
-      }, { once: true });
-      // Fallback
-      setTimeout(() => {
-        const btn = document.getElementById('btnVerEspejos');
-        if (btn) btn.classList.add('show');
-      }, 60000);
-    }
-  }
-
-  // ===== S5: VIDEO ESPEJOS =====
-  function startS5() {
-    const v = document.getElementById('videoEspejos');
-    if (v) {
+    if (n === 2) {
+      const v = document.getElementById('video1');
       v.muted = false;
       v.currentTime = 0;
       v.play().catch(() => { v.muted = true; v.play(); });
     }
   }
-
-  updateProgress(1);
 </script>
 </body>
 </html>
