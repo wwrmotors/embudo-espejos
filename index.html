@@ -1731,7 +1731,7 @@
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
         const pollRes = await fetch('/api/replicate/' + prediction.id, {
-          headers: { 'Authorization': 'Token ' + REPLICATE_TOKEN }
+          
         });
         const poll = await pollRes.json();
         if (poll.status === 'succeeded') {
