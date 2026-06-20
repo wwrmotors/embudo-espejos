@@ -1730,7 +1730,7 @@
       let result = null;
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
-        const pollRes = await fetch('/api/replicate/' + prediction.id, {
+        const pollRes = await fetch('/api/replicate?id=' + prediction.id, {
           
         });
         const poll = await pollRes.json();
