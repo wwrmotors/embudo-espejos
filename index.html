@@ -361,22 +361,45 @@
     if (n === 2) {
       ensureVideoSrc('video1');
       showSpinner('spin2');
-      playVideo('video1', () => { hideSpinner('spin2'); startVibration(); goTo(3); }, false, 'spin2');
+      // BUG 1 FIX: vibración solo arranca al terminar S2, nunca si el usuario ya avanzó
+      playVideo('video1', () => {
+        hideSpinner('spin2');
+        if (currentScreen === 2) { startVibration(); goTo(3); }
+      }, false, 'spin2');
     }
     if (n === 4) {
       ensureVideoSrc('video2');
       showSpinner('spin4');
-      playVideo('video2', () => { hideSpinner('spin4'); showBtn('btnSeguirViendo'); }, false, 'spin4');
+      // BUG 2 FIX: botón aparece solo al terminar el video, no antes
+      playVideo('video2', () => {
+        hideSpinner('spin4');
+        if (currentScreen === 4) showBtn('btnSeguirViendo');
+      }, false, 'spin4');
     }
     if (n === 5) {
       ensureVideoSrc('video3');
       showSpinner('spin5');
-      playVideo('video3', () => { hideSpinner('spin5'); showBtn('btnVerEspejos'); }, false, 'spin5');
+      // BUG 3 FIX: igual que arriba
+      playVideo('video3', () => {
+        hideSpinner('spin5');
+        if (currentScreen === 5) showBtn('btnVerEspejos');
+      }, false, 'spin5');
     }
     if (n === 6) {
       ensureVideoSrc('video4');
       showSpinner('spin6');
-      playVideo('video4', () => { hideSpinner('spin6'); setTimeout(() => showBtn('btnTipoMoto'), 3000); }, true, 'spin6');
+      // BUG 4 FIX: el video es loop=true, por eso onEnd nunca corría.
+      // Mostramos el botón directamente con un delay desde que empieza a reproducir,
+      // sin depender del evento 'ended'.
+      playVideo('video4', null, true, 'spin6');
+      // El botón aparece 4 s después de que el video empieza (después de hide spinner)
+      const waitForPlay = setInterval(() => {
+        const v4 = document.getElementById('video4');
+        if (v4 && !v4.paused) {
+          clearInterval(waitForPlay);
+          setTimeout(() => { if (currentScreen === 6) showBtn('btnTipoMoto'); }, 4000);
+        }
+      }, 200);
     }
     if (n === 7 || n === 8 || n === 9 || n === 10) {
       const v4 = document.getElementById('video4');
@@ -443,18 +466,27 @@
         .catch(() => setTimeout(() => v.play().catch(() => {}), 300));
     };
 
-    // Si ya tiene datos suficientes, reproduce de inmediato; si no, espera canplay
     if (v.readyState >= 3) {
       tryPlay();
     } else {
       v.addEventListener('canplay', () => { if (spinnerId) hideSpinner(spinnerId); tryPlay(); }, { once: true });
     }
 
+    // Solo registrar onEnd si hay callback Y el video no es loop
     if (onEnd && !loop) {
-      v.addEventListener('ended', onEnd, { once: true });
-      v.addEventListener('error', onEnd, { once: true });
-      const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 3000) : 30000;
-      setTimeout(onEnd, maxWait);
+      let called = false;
+      const safeOnEnd = () => { if (!called) { called = true; onEnd(); } };
+      v.addEventListener('ended', safeOnEnd, { once: true });
+      v.addEventListener('error', safeOnEnd, { once: true });
+      // Timeout de seguridad: espera la duración real + 5 s de buffer
+      // Se recalcula en 'loadedmetadata' para tener la duración exacta
+      let timeoutId = setTimeout(safeOnEnd, 35000);
+      v.addEventListener('loadedmetadata', () => {
+        clearTimeout(timeoutId);
+        if (isFinite(v.duration) && v.duration > 0) {
+          timeoutId = setTimeout(safeOnEnd, v.duration * 1000 + 5000);
+        }
+      }, { once: true });
     }
   }
 
