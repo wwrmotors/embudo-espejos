@@ -300,6 +300,8 @@
     video4: 'https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4',
   };
 
+  const VIB_AUDIO_SRC = 'https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3';
+
   // ── Carga un video solo cuando se necesita ──────────────────────────
   function loadVideo(id) {
     const v = document.getElementById(id);
@@ -395,31 +397,38 @@
     }
   }
 
+  // ── FIX #1: reproducción de video ────────────────────────────────────
+  // Antes: se esperaba el evento 'canplay' para recién ahí llamar a play(),
+  // y los listeners de 'error'/'ended' solo se registraban dentro de esa
+  // espera. Con preload="metadata"/"none" el navegador NO sigue bajando
+  // datos por su cuenta: necesita que se llame play() para hacerlo. Eso
+  // generaba un punto muerto (sobre todo en video1, precargado solo con
+  // metadata) y, si algo fallaba, no había ningún listener activo para
+  // recuperarse → pantalla negra permanente.
+  //
+  // Ahora: se llama play() de inmediato (eso dispara la descarga real) y
+  // los listeners de fin/error quedan activos desde el primer momento.
   function playVideo(id, onEnd, loop) {
     const v = document.getElementById(id);
     if (!v) return;
     v.muted = true;
-    v.currentTime = 0;
+    try { v.currentTime = 0; } catch (e) {}
     if (loop) v.loop = true;
 
-    const startPlay = () => {
+    if (onEnd) {
+      v.addEventListener('ended', onEnd, { once: true });
+      v.addEventListener('error', onEnd, { once: true });
+      const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 2000) : 20000;
+      setTimeout(onEnd, maxWait);
+    }
+
+    const tryPlay = () => {
       v.play()
         .then(() => { setTimeout(() => { v.muted = false; }, 50); })
         .catch(() => { setTimeout(() => v.play().catch(() => {}), 300); });
-      if (onEnd) {
-        v.addEventListener('ended', onEnd, { once: true });
-        v.addEventListener('error', onEnd, { once: true });
-        const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 2000) : 25000;
-        setTimeout(onEnd, maxWait);
-      }
     };
 
-    // Si el video aún no tiene suficientes datos, esperar canplay
-    if (v.readyState >= 2) {
-      startPlay();
-    } else {
-      v.addEventListener('canplay', startPlay, { once: true });
-    }
+    tryPlay();
   }
 
   function showBtn(id) {
@@ -427,11 +436,40 @@
     if (btn) btn.classList.add('show');
   }
 
+  // ── FIX #2: sonido de "vibración" de la llamada ──────────────────────
+  // Antes: el Audio() de la vibración se creaba y reproducía varios pasos
+  // (timeouts/eventos) después del toque real del usuario en "ENTRAR".
+  // En navegadores como Safari/iOS eso puede bloquear el audio la primera
+  // vez que se usa ese elemento, y el .catch(()=>{}) lo silenciaba sin
+  // reintentar.
+  //
+  // Ahora: el audio se crea y se "desbloquea" (play + pause inmediato)
+  // dentro del clic real del botón "ENTRAR A LA EXPERIENCIA" — un gesto
+  // de usuario genuino — para que el navegador permita reproducirlo más
+  // adelante por código. Además, si igual fallara, se reintenta una vez.
+  function unlockAudio() {
+    try {
+      vibAudio = new Audio(VIB_AUDIO_SRC);
+      vibAudio.loop = true;
+      vibAudio.volume = 1.0;
+      vibAudio.play().then(() => {
+        vibAudio.pause();
+        vibAudio.currentTime = 0;
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
   function startVibration() {
     if (navigator.vibrate) { const pat = []; for (let i = 0; i < 30; i++) pat.push(400, 500); navigator.vibrate(pat); }
     try {
-      vibAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
-      vibAudio.loop = true; vibAudio.volume = 1.0; vibAudio.play().catch(() => {});
+      if (!vibAudio) vibAudio = new Audio(VIB_AUDIO_SRC);
+      vibAudio.loop = true;
+      vibAudio.volume = 1.0;
+      vibAudio.currentTime = 0;
+      vibAudio.play().catch(() => {
+        // reintento por si el navegador lo bloqueó la primera vez
+        setTimeout(() => vibAudio.play().catch(() => {}), 300);
+      });
     } catch (e) {}
   }
 
@@ -439,8 +477,8 @@
     if (navigator.vibrate) navigator.vibrate(0);
     try {
       if (vibAudio) {
-        vibAudio.pause(); vibAudio.loop = false;
-        vibAudio.src = ''; vibAudio.load(); vibAudio = null;
+        vibAudio.pause();
+        vibAudio.currentTime = 0;
       }
     } catch (e) {}
   }
@@ -448,6 +486,8 @@
   function contestar() { stopVibration(); goTo(4); }
 
   function iniciarCuenta() {
+    unlockAudio(); // desbloquea el audio de la llamada en el gesto real del usuario
+
     const prev = document.getElementById('s' + currentScreen);
     const next = document.getElementById('s1b');
     if (prev) { prev.classList.remove('active'); prev.classList.add('exit'); setTimeout(() => prev.classList.remove('exit'), 900); }
@@ -470,25 +510,20 @@
   }
 
   // ── CARGA INICIAL: solo lo necesario para la pantalla de inicio ─────
-  // Solo pre-carga el video1 con metadata (no el buffer completo)
-  // para que arranque rápido cuando el usuario presione "ENTRAR"
   function preload() {
     const bar = document.getElementById('loadBar');
     const txt = document.getElementById('loadText');
 
-    // Cargar solo video1 con metadata
     const v1 = document.getElementById('video1');
     v1.src = VIDEO_SRCS['video1'];
     v1.preload = 'metadata'; // Solo metadata, no el archivo completo
 
-    // Animar la barra para dar feedback visual
     let progress = 0;
     const interval = setInterval(() => {
       progress = Math.min(progress + 12, 90);
       if (bar) bar.style.width = progress + '%';
     }, 150);
 
-    // Cuando tengamos metadata del video1, ya podemos entrar
     const onReady = () => {
       clearInterval(interval);
       if (bar) bar.style.width = '100%';
@@ -499,7 +534,6 @@
     v1.addEventListener('loadedmetadata', onReady, { once: true });
     v1.addEventListener('error', onReady, { once: true });
 
-    // Fallback: máximo 3 segundos de espera
     setTimeout(() => { if (currentScreen === 0) onReady(); }, 3000);
 
     v1.load();
