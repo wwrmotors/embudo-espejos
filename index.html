@@ -131,8 +131,7 @@
 
 <!-- S2: VIDEO PRINCIPAL -->
 <div class="screen" id="s2">
-  <video class="bg-video" id="video1" playsinline muted
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN%20720P.mp4"></video>
+  <video class="bg-video" id="video1" playsinline muted preload="none"></video>
 </div>
 
 <!-- S3: LLAMADA ENTRANTE -->
@@ -149,7 +148,7 @@
     <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
     <div style="font-size:10px;letter-spacing:6px;color:#ff4422;text-transform:uppercase;margin-bottom:1rem;">A Ñ O &nbsp; 2 0 4 0</div>
     <div style="width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);overflow:hidden;margin-bottom:1.2rem;">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
+      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
     </div>
     <div style="font-size:24px;font-weight:700;font-style:italic;margin-bottom:0.4rem;">El Piloto</div>
     <div style="font-size:12px;letter-spacing:5px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:0.5rem;">P I L O T O &nbsp; L L A M A N D O</div>
@@ -163,8 +162,7 @@
 
 <!-- S4: VIDEO HISTORIA -->
 <div class="screen" id="s4">
-  <video class="bg-video" id="video2" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOHISTORIA720P.mp4"></video>
+  <video class="bg-video" id="video2" playsinline preload="none"></video>
   <button class="btn-over-video" id="btnSeguirViendo" onclick="goTo(5)">
     <span>QUIERO SEGUIR VIENDO</span><span>→</span>
   </button>
@@ -172,8 +170,7 @@
 
 <!-- S5: VIDEO EVOLUCIÓN -->
 <div class="screen" id="s5">
-  <video class="bg-video" id="video3" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEO%20EVOLUCION%20720P.mp4"></video>
+  <video class="bg-video" id="video3" playsinline preload="none"></video>
   <button class="btn-over-video" id="btnVerEspejos" onclick="goTo(6)">
     <span>QUIERO VER LA EVOLUCIÓN DE LOS ESPEJOS</span><span>→</span>
   </button>
@@ -181,8 +178,7 @@
 
 <!-- S6: VIDEO ESPEJOS TIKTOK -->
 <div class="screen" id="s6">
-  <video class="bg-video" id="video4" playsinline loop
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4"></video>
+  <video class="bg-video" id="video4" playsinline loop preload="none"></video>
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2),rgba(0,0,0,0.6));z-index:1;"></div>
   <div style="position:absolute;top:0;left:0;right:0;padding:2.5rem 1rem 0.75rem;display:flex;justify-content:center;z-index:3;">
     <div style="font-size:16px;font-weight:700;font-family:sans-serif;">Para ti</div>
@@ -190,7 +186,7 @@
   <div style="position:absolute;right:12px;bottom:165px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:3;">
     <div style="position:relative;">
       <div style="width:48px;height:48px;border-radius:50%;border:2px solid #fff;overflow:hidden;">
-        <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
       </div>
       <div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:18px;height:18px;background:#ff2d55;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">+</div>
     </div>
@@ -296,6 +292,28 @@
   let currentScreen = 0;
   let vibAudio = null;
 
+  // ── URLS de videos ──────────────────────────────────────────────────
+  const VIDEO_SRCS = {
+    video1: 'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN%20720P.mp4',
+    video2: 'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOHISTORIA720P.mp4',
+    video3: 'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEO%20EVOLUCION%20720P.mp4',
+    video4: 'https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4',
+  };
+
+  // ── Carga un video solo cuando se necesita ──────────────────────────
+  function loadVideo(id) {
+    const v = document.getElementById(id);
+    if (!v || v.src) return; // ya cargado
+    v.src = VIDEO_SRCS[id];
+    v.load();
+  }
+
+  // ── Pre-carga el SIGUIENTE video mientras el usuario ve el actual ───
+  function preloadNext(id) {
+    setTimeout(() => loadVideo(id), 500);
+  }
+
+  // ── Navegación ──────────────────────────────────────────────────────
   function goTo(n) {
     const prev = document.getElementById('s' + currentScreen);
     const next = document.getElementById('s' + n);
@@ -316,10 +334,27 @@
   }
 
   function onEnter(n) {
-    if (n === 2) playVideo('video1', () => { startVibration(); goTo(3); });
-    if (n === 4) playVideo('video2', () => showBtn('btnSeguirViendo'));
-    if (n === 5) playVideo('video3', () => showBtn('btnVerEspejos'));
-    if (n === 6) { playVideo('video4', null, true); setTimeout(() => showBtn('btnTipoMoto'), 3000); }
+    if (n === 2) {
+      loadVideo('video1');
+      playVideo('video1', () => { startVibration(); goTo(3); });
+      // Pre-carga video2 mientras el usuario ve video1
+      preloadNext('video2');
+    }
+    if (n === 4) {
+      loadVideo('video2');
+      playVideo('video2', () => showBtn('btnSeguirViendo'));
+      preloadNext('video3');
+    }
+    if (n === 5) {
+      loadVideo('video3');
+      playVideo('video3', () => showBtn('btnVerEspejos'));
+      preloadNext('video4');
+    }
+    if (n === 6) {
+      loadVideo('video4');
+      playVideo('video4', null, true);
+      setTimeout(() => showBtn('btnTipoMoto'), 3000);
+    }
     if (n === 7 || n === 8 || n === 9 || n === 10) {
       const v4 = document.getElementById('video4');
       if (v4) { v4.pause(); v4.muted = true; }
@@ -366,12 +401,24 @@
     v.muted = true;
     v.currentTime = 0;
     if (loop) v.loop = true;
-    v.play().then(() => { setTimeout(() => { v.muted = false; }, 50); }).catch(() => { setTimeout(() => v.play().catch(()=>{}), 300); });
-    if (onEnd) {
-      v.addEventListener('ended', onEnd, { once: true });
-      v.addEventListener('error', onEnd, { once: true });
-      const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 2000) : 25000;
-      setTimeout(onEnd, maxWait);
+
+    const startPlay = () => {
+      v.play()
+        .then(() => { setTimeout(() => { v.muted = false; }, 50); })
+        .catch(() => { setTimeout(() => v.play().catch(() => {}), 300); });
+      if (onEnd) {
+        v.addEventListener('ended', onEnd, { once: true });
+        v.addEventListener('error', onEnd, { once: true });
+        const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 2000) : 25000;
+        setTimeout(onEnd, maxWait);
+      }
+    };
+
+    // Si el video aún no tiene suficientes datos, esperar canplay
+    if (v.readyState >= 2) {
+      startPlay();
+    } else {
+      v.addEventListener('canplay', startPlay, { once: true });
     }
   }
 
@@ -381,24 +428,21 @@
   }
 
   function startVibration() {
-    if (navigator.vibrate) { const pat=[]; for(let i=0;i<30;i++) pat.push(400,500); navigator.vibrate(pat); }
+    if (navigator.vibrate) { const pat = []; for (let i = 0; i < 30; i++) pat.push(400, 500); navigator.vibrate(pat); }
     try {
       vibAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
-      vibAudio.loop = true; vibAudio.volume = 1.0; vibAudio.play().catch(()=>{});
-    } catch(e){}
+      vibAudio.loop = true; vibAudio.volume = 1.0; vibAudio.play().catch(() => {});
+    } catch (e) {}
   }
 
   function stopVibration() {
     if (navigator.vibrate) navigator.vibrate(0);
     try {
       if (vibAudio) {
-        vibAudio.pause();
-        vibAudio.loop = false;
-        vibAudio.src = '';
-        vibAudio.load();
-        vibAudio = null;
+        vibAudio.pause(); vibAudio.loop = false;
+        vibAudio.src = ''; vibAudio.load(); vibAudio = null;
       }
-    } catch(e) {}
+    } catch (e) {}
   }
 
   function contestar() { stopVibration(); goTo(4); }
@@ -414,7 +458,7 @@
     const total = 3000;
     bar.style.transition = 'width ' + total + 'ms linear';
     setTimeout(() => bar.style.width = '100%', 50);
-    [5,4,3,2,1].forEach((n, i) => { setTimeout(() => { if(el) el.textContent = n; }, (i/5)*total); });
+    [5, 4, 3, 2, 1].forEach((n, i) => { setTimeout(() => { if (el) el.textContent = n; }, (i / 5) * total); });
     setTimeout(() => goTo(2), total);
   }
 
@@ -422,39 +466,43 @@
   function ttLike() {
     ttLiked = !ttLiked; ttCount += ttLiked ? 1 : -1;
     document.getElementById('ttHeart').textContent = ttLiked ? '❤️' : '🤍';
-    document.getElementById('ttLikes').textContent = ttCount >= 1000 ? (ttCount/1000).toFixed(1)+'K' : ttCount;
+    document.getElementById('ttLikes').textContent = ttCount >= 1000 ? (ttCount / 1000).toFixed(1) + 'K' : ttCount;
   }
 
-  const videosToLoad = [
-    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN%20720P.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOHISTORIA720P.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEO%20EVOLUCION%20720P.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4',
-  ];
-
+  // ── CARGA INICIAL: solo lo necesario para la pantalla de inicio ─────
+  // Solo pre-carga el video1 con metadata (no el buffer completo)
+  // para que arranque rápido cuando el usuario presione "ENTRAR"
   function preload() {
-    let loaded = 0;
     const bar = document.getElementById('loadBar');
     const txt = document.getElementById('loadText');
-    const ids = ['video1','video2','video3','video4'];
-    ids.forEach((id, i) => {
-      const v = document.getElementById(id);
-      if (!v) { loaded++; return; }
-      v.preload = 'auto'; v.src = videosToLoad[i];
-      v.addEventListener('canplaythrough', () => { loaded++; if(bar) bar.style.width=((loaded/ids.length)*100)+'%'; if(loaded>=ids.length) done(); }, { once:true });
-      v.addEventListener('error', () => { loaded++; if(loaded>=ids.length) done(); }, { once:true });
-      v.load();
-    });
-    setTimeout(() => { if(currentScreen===0) done(); }, 8000);
-  }
 
-  function done() {
-    if (currentScreen !== 0) return;
-    const bar = document.getElementById('loadBar');
-    const txt = document.getElementById('loadText');
-    if(bar) bar.style.width='100%';
-    if(txt) txt.textContent='¡LISTO!';
-    setTimeout(() => goTo(1), 400);
+    // Cargar solo video1 con metadata
+    const v1 = document.getElementById('video1');
+    v1.src = VIDEO_SRCS['video1'];
+    v1.preload = 'metadata'; // Solo metadata, no el archivo completo
+
+    // Animar la barra para dar feedback visual
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress = Math.min(progress + 12, 90);
+      if (bar) bar.style.width = progress + '%';
+    }, 150);
+
+    // Cuando tengamos metadata del video1, ya podemos entrar
+    const onReady = () => {
+      clearInterval(interval);
+      if (bar) bar.style.width = '100%';
+      if (txt) txt.textContent = '¡LISTO!';
+      setTimeout(() => goTo(1), 350);
+    };
+
+    v1.addEventListener('loadedmetadata', onReady, { once: true });
+    v1.addEventListener('error', onReady, { once: true });
+
+    // Fallback: máximo 3 segundos de espera
+    setTimeout(() => { if (currentScreen === 0) onReady(); }, 3000);
+
+    v1.load();
   }
 
   preload();
