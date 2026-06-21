@@ -71,6 +71,21 @@
   .placeholder-img .ph-icon { font-size:48px; opacity:0.5; }
   .placeholder-img .ph-text { font-size:11px; letter-spacing:2px; text-transform:uppercase; text-align:center; padding:0 2rem; }
 
+  /* Spinner que aparece mientras carga un video bajo demanda */
+  .video-spinner {
+    position:absolute; inset:0; z-index:5;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.7); gap:1rem;
+    pointer-events:none; opacity:0; transition:opacity 0.3s;
+  }
+  .video-spinner.visible { opacity:1; }
+  .spinner-ring {
+    width:44px; height:44px; border-radius:50%;
+    border:3px solid rgba(255,255,255,0.15);
+    border-top-color:#ff4422;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
   @keyframes ring {
@@ -81,7 +96,7 @@
 </head>
 <body>
 
-<!-- S0: LOADING -->
+<!-- S0: LOADING — solo carga la imagen hero (liviana) -->
 <div class="screen active" id="s0">
   <div style="display:flex;flex-direction:column;align-items:center;gap:2rem;">
     <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;">W W R &nbsp; M O T O R S</div>
@@ -129,10 +144,11 @@
   </div>
 </div>
 
-<!-- S2: VIDEO PRINCIPAL -->
+<!-- S2: VIDEO PRINCIPAL — sin src, se asigna al entrar -->
 <div class="screen" id="s2">
-  <video class="bg-video" id="video1" playsinline muted
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN.13%20MBFINAL.mp4"></video>
+  <div class="video-spinner" id="spin2"><div class="spinner-ring"></div></div>
+  <video class="bg-video" id="video1" playsinline muted preload="none"
+    poster="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg"></video>
 </div>
 
 <!-- S3: LLAMADA ENTRANTE -->
@@ -149,7 +165,7 @@
     <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:2rem;">W W R &nbsp; M O T O R S</div>
     <div style="font-size:10px;letter-spacing:6px;color:#ff4422;text-transform:uppercase;margin-bottom:1rem;">A Ñ O &nbsp; 2 0 4 0</div>
     <div style="width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);overflow:hidden;margin-bottom:1.2rem;">
-      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
+      <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
     </div>
     <div style="font-size:24px;font-weight:700;font-style:italic;margin-bottom:0.4rem;">El Piloto</div>
     <div style="font-size:12px;letter-spacing:5px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:0.5rem;">P I L O T O &nbsp; L L A M A N D O</div>
@@ -161,28 +177,31 @@
   </div>
 </div>
 
-<!-- S4: VIDEO 2040-1940 -->
+<!-- S4: VIDEO 2040-1940 — sin src, se asigna al entrar -->
 <div class="screen" id="s4">
-  <video class="bg-video" id="video2" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/2040%20-%201940%20VIDEO%2024%20MB.mp4"></video>
+  <div class="video-spinner" id="spin4"><div class="spinner-ring"></div></div>
+  <video class="bg-video" id="video2" playsinline preload="none"
+    poster="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg"></video>
   <button class="btn-over-video" id="btnSeguirViendo" onclick="goTo(5)">
     <span>QUIERO SEGUIR VIENDO</span><span>→</span>
   </button>
 </div>
 
-<!-- S5: VIDEO TODO EVOLUCIONÓ -->
+<!-- S5: VIDEO TODO EVOLUCIONÓ — sin src, se asigna al entrar -->
 <div class="screen" id="s5">
-  <video class="bg-video" id="video3" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/TODO%20EVOLUCINO%2015%20MB%20.mp4"></video>
+  <div class="video-spinner" id="spin5"><div class="spinner-ring"></div></div>
+  <video class="bg-video" id="video3" playsinline preload="none"
+    poster="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg"></video>
   <button class="btn-over-video" id="btnVerEspejos" onclick="goTo(6)">
     <span>QUIERO VER LA EVOLUCIÓN DE LOS ESPEJOS</span><span>→</span>
   </button>
 </div>
 
-<!-- S6: VIDEO ESPEJOS TIKTOK -->
+<!-- S6: VIDEO ESPEJOS TIKTOK — sin src, se asigna al entrar -->
 <div class="screen" id="s6">
-  <video class="bg-video" id="video4" playsinline loop
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4"></video>
+  <div class="video-spinner" id="spin6"><div class="spinner-ring"></div></div>
+  <video class="bg-video" id="video4" playsinline loop preload="none"
+    poster="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg"></video>
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2),rgba(0,0,0,0.6));z-index:1;"></div>
   <div style="position:absolute;top:0;left:0;right:0;padding:2.5rem 1rem 0.75rem;display:flex;justify-content:center;z-index:3;">
     <div style="font-size:16px;font-weight:700;font-family:sans-serif;">Para ti</div>
@@ -190,7 +209,7 @@
   <div style="position:absolute;right:12px;bottom:165px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:3;">
     <div style="position:relative;">
       <div style="width:48px;height:48px;border-radius:50%;border:2px solid #fff;overflow:hidden;">
-        <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="https://wwrmotorszonadeatraccion.b-cdn.net/fotopiloto.jpg" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:18px;height:18px;background:#ff2d55;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">+</div>
     </div>
@@ -271,19 +290,13 @@
 <!-- S10: PÁGINA FINAL -->
 <div class="screen" id="s10">
   <div style="position:relative;z-index:2;width:100%;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:2rem;">
-
-    <!-- Logo / Título -->
     <div style="text-align:center;">
       <div style="font-size:11px;letter-spacing:8px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:0.75rem;">E S P E J O S &nbsp; R E T R O V I S O R E S</div>
       <h1 style="font-size:clamp(36px,11vw,64px);font-weight:900;letter-spacing:-1px;text-transform:uppercase;line-height:1;">
         W W R<br><span style="color:#ff4422;">M O T O R S</span>
       </h1>
     </div>
-
-    <!-- Separador -->
     <div style="width:60px;height:2px;background:#ff4422;"></div>
-
-    <!-- Botón comprar -->
     <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
       <button onclick="window.location.href='https://wwrmotors.com/products/espejo-retrovisor-tipo-ala-retractil'" style="
         width:100%; max-width:360px; padding:22px 24px;
@@ -295,7 +308,6 @@
         <span>COMPRAR AHORA</span><span>→</span>
       </button>
     </div>
-
   </div>
 </div>
 
@@ -303,6 +315,29 @@
   let currentScreen = 0;
   let vibAudio = null;
 
+  // ─── FUENTES DE VIDEO — se asignan bajo demanda ───────────────────────────
+  const VIDEO_SRCS = {
+    video1: 'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN.13%20MBFINAL.mp4',
+    video2: 'https://wwrmotorszonadeatraccion.b-cdn.net/2040%20-%201940%20VIDEO%2024%20MB.mp4',
+    video3: 'https://wwrmotorszonadeatraccion.b-cdn.net/TODO%20EVOLUCINO%2015%20MB%20.mp4',
+    video4: 'https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4',
+  };
+  // Rastrea qué videos ya tienen su src asignado
+  const videoLoaded = { video1: false, video2: false, video3: false, video4: false };
+
+  // Asigna el src al video solo la primera vez que se necesita
+  function ensureVideoSrc(id) {
+    if (!videoLoaded[id]) {
+      const v = document.getElementById(id);
+      if (v) {
+        v.src = VIDEO_SRCS[id];
+        v.load();
+        videoLoaded[id] = true;
+      }
+    }
+  }
+
+  // ─── NAVEGACIÓN ──────────────────────────────────────────────────────────
   function goTo(n) {
     const prev = document.getElementById('s' + currentScreen);
     const next = document.getElementById('s' + n);
@@ -311,7 +346,6 @@
       prev.classList.remove('active');
       prev.classList.add('exit');
       setTimeout(() => prev.classList.remove('exit'), 900);
-      // Pausar y resetear todos los videos de la pantalla anterior
       prev.querySelectorAll('video').forEach(v => {
         v.pause();
         v.muted = true;
@@ -324,10 +358,26 @@
   }
 
   function onEnter(n) {
-    if (n === 2) playVideo('video1', () => { startVibration(); goTo(3); });
-    if (n === 4) playVideo('video2', () => showBtn('btnSeguirViendo'));
-    if (n === 5) playVideo('video3', () => showBtn('btnVerEspejos'));
-    if (n === 6) { playVideo('video4', null, true); setTimeout(() => showBtn('btnTipoMoto'), 3000); }
+    if (n === 2) {
+      ensureVideoSrc('video1');
+      showSpinner('spin2');
+      playVideo('video1', () => { hideSpinner('spin2'); startVibration(); goTo(3); }, false, 'spin2');
+    }
+    if (n === 4) {
+      ensureVideoSrc('video2');
+      showSpinner('spin4');
+      playVideo('video2', () => { hideSpinner('spin4'); showBtn('btnSeguirViendo'); }, false, 'spin4');
+    }
+    if (n === 5) {
+      ensureVideoSrc('video3');
+      showSpinner('spin5');
+      playVideo('video3', () => { hideSpinner('spin5'); showBtn('btnVerEspejos'); }, false, 'spin5');
+    }
+    if (n === 6) {
+      ensureVideoSrc('video4');
+      showSpinner('spin6');
+      playVideo('video4', () => { hideSpinner('spin6'); setTimeout(() => showBtn('btnTipoMoto'), 3000); }, true, 'spin6');
+    }
     if (n === 7 || n === 8 || n === 9 || n === 10) {
       const v4 = document.getElementById('video4');
       if (v4) { v4.pause(); v4.muted = true; }
@@ -336,20 +386,28 @@
     if (n === 9) cargarVariante(9);
   }
 
+  // ─── SPINNER HELPERS ─────────────────────────────────────────────────────
+  function showSpinner(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('visible');
+  }
+  function hideSpinner(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('visible');
+  }
+
+  // ─── VARIANTES ────────────────────────────────────────────────────────────
   const variantes = {
-    enduro:    { nombre:'Enduro',    icon:'🏍️', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/ENDURO.png',       imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/ENDURO%20EN.png' },
-    deportiva: { nombre:'Deportiva', icon:'🏁', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/DEPORTIVA.png',    imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/DEPORTIVA%20EN.png' },
-    scooter:   { nombre:'Scooter',   icon:'🛵', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/SCOOTER.png',      imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/SCOOTER%20EN.png' },
-    naked:     { nombre:'Naked',     icon:'⚡', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKED%20NAKED.png', imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKED%20NAKED%20EN.png' },
-    urbana:    { nombre:'Urbana',    icon:'🏙️', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKEDORIGINAL.webp',imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKED%20EN.png' },
-    adventure: { nombre:'Adventure', icon:'🗺️', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/ADVENTURE.png',   imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/ADVENTURA%20EN.png' },
+    enduro:    { nombre:'Enduro',    icon:'🏍️', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/ENDURO.png',        imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/ENDURO%20EN.png' },
+    deportiva: { nombre:'Deportiva', icon:'🏁', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/DEPORTIVA.png',     imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/DEPORTIVA%20EN.png' },
+    scooter:   { nombre:'Scooter',   icon:'🛵', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/SCOOTER.png',       imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/SCOOTER%20EN.png' },
+    naked:     { nombre:'Naked',     icon:'⚡', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKED%20NAKED.png',  imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKED%20NAKED%20EN.png' },
+    urbana:    { nombre:'Urbana',    icon:'🏙️', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKEDORIGINAL.webp', imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/NAKED%20EN.png' },
+    adventure: { nombre:'Adventure', icon:'🗺️', imgFabrica:'https://wwrmotorszonadeatraccion.b-cdn.net/ADVENTURE.png',    imgWWR:'https://wwrmotorszonadeatraccion.b-cdn.net/ADVENTURA%20EN.png' },
   };
   let varianteActual = 'enduro';
 
-  function selectVariant(key) {
-    varianteActual = key;
-    goTo(8);
-  }
+  function selectVariant(key) { varianteActual = key; goTo(8); }
 
   function cargarVariante(screenNum) {
     const v = variantes[varianteActual];
@@ -368,17 +426,34 @@
     }
   }
 
-  function playVideo(id, onEnd, loop) {
+  // ─── REPRODUCCIÓN DE VIDEO ───────────────────────────────────────────────
+  function playVideo(id, onEnd, loop, spinnerId) {
     const v = document.getElementById(id);
     if (!v) return;
     v.muted = true;
     v.currentTime = 0;
     if (loop) v.loop = true;
-    v.play().then(() => { setTimeout(() => { v.muted = false; }, 50); }).catch(() => { setTimeout(() => v.play().catch(()=>{}), 300); });
-    if (onEnd) {
+
+    const tryPlay = () => {
+      v.play()
+        .then(() => {
+          if (spinnerId) hideSpinner(spinnerId);
+          setTimeout(() => { v.muted = false; }, 50);
+        })
+        .catch(() => setTimeout(() => v.play().catch(() => {}), 300));
+    };
+
+    // Si ya tiene datos suficientes, reproduce de inmediato; si no, espera canplay
+    if (v.readyState >= 3) {
+      tryPlay();
+    } else {
+      v.addEventListener('canplay', () => { if (spinnerId) hideSpinner(spinnerId); tryPlay(); }, { once: true });
+    }
+
+    if (onEnd && !loop) {
       v.addEventListener('ended', onEnd, { once: true });
       v.addEventListener('error', onEnd, { once: true });
-      const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 2000) : 25000;
+      const maxWait = (isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 3000) : 30000;
       setTimeout(onEnd, maxWait);
     }
   }
@@ -388,35 +463,35 @@
     if (btn) btn.classList.add('show');
   }
 
+  // ─── VIBRACIÓN / AUDIO ────────────────────────────────────────────────────
   function startVibration() {
     if (navigator.vibrate) { const pat=[]; for(let i=0;i<30;i++) pat.push(400,500); navigator.vibrate(pat); }
     try {
       vibAudio = new Audio('https://wwrmotorszonadeatraccion.b-cdn.net/universfield-cell-phone-vibration-352298%20(1)%20(1).mp3');
-      vibAudio.loop = true; vibAudio.volume = 1.0; vibAudio.play().catch(()=>{});
-    } catch(e){}
+      vibAudio.loop = true; vibAudio.volume = 1.0; vibAudio.play().catch(() => {});
+    } catch(e) {}
   }
 
   function stopVibration() {
     if (navigator.vibrate) navigator.vibrate(0);
     try {
-      if (vibAudio) {
-        vibAudio.pause();
-        vibAudio.loop = false;
-        vibAudio.src = '';
-        vibAudio.load();
-        vibAudio = null;
-      }
+      if (vibAudio) { vibAudio.pause(); vibAudio.loop = false; vibAudio.src = ''; vibAudio.load(); vibAudio = null; }
     } catch(e) {}
   }
 
   function contestar() { stopVibration(); goTo(4); }
 
+  // ─── COUNTDOWN ────────────────────────────────────────────────────────────
   function iniciarCuenta() {
     const prev = document.getElementById('s' + currentScreen);
     const next = document.getElementById('s1b');
     if (prev) { prev.classList.remove('active'); prev.classList.add('exit'); setTimeout(() => prev.classList.remove('exit'), 900); }
     next.classList.add('active');
     currentScreen = '1b';
+
+    // Pre-cargar el primer video mientras el usuario ve el countdown (3 s de margen)
+    ensureVideoSrc('video1');
+
     const el = document.getElementById('countdown');
     const bar = document.getElementById('countBar');
     const total = 3000;
@@ -426,6 +501,7 @@
     setTimeout(() => goTo(2), total);
   }
 
+  // ─── TIKTOK LIKE ─────────────────────────────────────────────────────────
   let ttLiked = false, ttCount = 1200;
   function ttLike() {
     ttLiked = !ttLiked; ttCount += ttLiked ? 1 : -1;
@@ -433,35 +509,31 @@
     document.getElementById('ttLikes').textContent = ttCount >= 1000 ? (ttCount/1000).toFixed(1)+'K' : ttCount;
   }
 
-  const videosToLoad = [
-    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN.13%20MBFINAL.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/2040%20-%201940%20VIDEO%2024%20MB.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/TODO%20EVOLUCINO%2015%20MB%20.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4',
-  ];
-
+  // ─── INICIO: solo carga la imagen hero, nada más ─────────────────────────
   function preload() {
-    let loaded = 0;
     const bar = document.getElementById('loadBar');
     const txt = document.getElementById('loadText');
-    const ids = ['video1','video2','video3','video4'];
-    ids.forEach((id, i) => {
-      const v = document.getElementById(id);
-      if (!v) { loaded++; return; }
-      v.preload = 'auto'; v.src = videosToLoad[i];
-      v.addEventListener('canplaythrough', () => { loaded++; if(bar) bar.style.width=((loaded/ids.length)*100)+'%'; if(loaded>=ids.length) done(); }, { once:true });
-      v.addEventListener('error', () => { loaded++; if(loaded>=ids.length) done(); }, { once:true });
-      v.load();
-    });
-    setTimeout(() => { if(currentScreen===0) done(); }, 8000);
+    const heroImg = new Image();
+    heroImg.onload = () => done();
+    heroImg.onerror = () => done();
+    heroImg.src = 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80';
+    // Timeout de seguridad: máximo 3 s en el loading
+    setTimeout(() => { if (currentScreen === 0) done(); }, 3000);
+    // Barra animada para dar feedback visual
+    let p = 0;
+    const iv = setInterval(() => {
+      p = Math.min(p + Math.random() * 15, 90);
+      if (bar) bar.style.width = p + '%';
+      if (p >= 90) clearInterval(iv);
+    }, 200);
   }
 
   function done() {
     if (currentScreen !== 0) return;
     const bar = document.getElementById('loadBar');
     const txt = document.getElementById('loadText');
-    if(bar) bar.style.width='100%';
-    if(txt) txt.textContent='¡LISTO!';
+    if (bar) bar.style.width = '100%';
+    if (txt) txt.textContent = '¡LISTO!';
     setTimeout(() => goTo(1), 400);
   }
 
