@@ -132,7 +132,7 @@
 <!-- S2: VIDEO PRINCIPAL -->
 <div class="screen" id="s2">
   <video class="bg-video" id="video1" playsinline muted
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN.13%20MBFINAL.mp4"></video>
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN%20720P.mp4"></video>
 </div>
 
 <!-- S3: LLAMADA ENTRANTE -->
@@ -161,19 +161,19 @@
   </div>
 </div>
 
-<!-- S4: VIDEO 2040-1940 -->
+<!-- S4: VIDEO HISTORIA -->
 <div class="screen" id="s4">
   <video class="bg-video" id="video2" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/2040%20-%201940%20VIDEO%2024%20MB.mp4"></video>
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOHISTORIA720P.mp4"></video>
   <button class="btn-over-video" id="btnSeguirViendo" onclick="goTo(5)">
     <span>QUIERO SEGUIR VIENDO</span><span>→</span>
   </button>
 </div>
 
-<!-- S5: VIDEO TODO EVOLUCIONÓ -->
+<!-- S5: VIDEO EVOLUCIÓN -->
 <div class="screen" id="s5">
   <video class="bg-video" id="video3" playsinline
-    src="https://wwrmotorszonadeatraccion.b-cdn.net/TODO%20EVOLUCINO%2015%20MB%20.mp4"></video>
+    src="https://wwrmotorszonadeatraccion.b-cdn.net/VIDEO%20EVOLUCION%20720P.mp4"></video>
   <button class="btn-over-video" id="btnVerEspejos" onclick="goTo(6)">
     <span>QUIERO VER LA EVOLUCIÓN DE LOS ESPEJOS</span><span>→</span>
   </button>
@@ -271,19 +271,13 @@
 <!-- S10: PÁGINA FINAL -->
 <div class="screen" id="s10">
   <div style="position:relative;z-index:2;width:100%;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:2rem;">
-
-    <!-- Logo / Título -->
     <div style="text-align:center;">
       <div style="font-size:11px;letter-spacing:8px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:0.75rem;">E S P E J O S &nbsp; R E T R O V I S O R E S</div>
       <h1 style="font-size:clamp(36px,11vw,64px);font-weight:900;letter-spacing:-1px;text-transform:uppercase;line-height:1;">
         W W R<br><span style="color:#ff4422;">M O T O R S</span>
       </h1>
     </div>
-
-    <!-- Separador -->
     <div style="width:60px;height:2px;background:#ff4422;"></div>
-
-    <!-- Botón comprar -->
     <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
       <button onclick="window.location.href='https://wwrmotors.com/products/espejo-retrovisor-tipo-ala-retractil'" style="
         width:100%; max-width:360px; padding:22px 24px;
@@ -295,7 +289,6 @@
         <span>COMPRAR AHORA</span><span>→</span>
       </button>
     </div>
-
   </div>
 </div>
 
@@ -311,7 +304,6 @@
       prev.classList.remove('active');
       prev.classList.add('exit');
       setTimeout(() => prev.classList.remove('exit'), 900);
-      // Pausar y resetear todos los videos de la pantalla anterior
       prev.querySelectorAll('video').forEach(v => {
         v.pause();
         v.muted = true;
@@ -434,9 +426,9 @@
   }
 
   const videosToLoad = [
-    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN.13%20MBFINAL.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/2040%20-%201940%20VIDEO%2024%20MB.mp4',
-    'https://wwrmotorszonadeatraccion.b-cdn.net/TODO%20EVOLUCINO%2015%20MB%20.mp4',
+    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOMAIN%20720P.mp4',
+    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEOHISTORIA720P.mp4',
+    'https://wwrmotorszonadeatraccion.b-cdn.net/VIDEO%20EVOLUCION%20720P.mp4',
     'https://wwrmotorszonadeatraccion.b-cdn.net/video%20tiktok.mp4',
   ];
 
