@@ -398,7 +398,15 @@
 
   function stopVibration() {
     if (navigator.vibrate) navigator.vibrate(0);
-    if (vibAudio) { vibAudio.pause(); vibAudio.currentTime = 0; vibAudio = null; }
+    try {
+      if (vibAudio) {
+        vibAudio.pause();
+        vibAudio.loop = false;
+        vibAudio.src = '';
+        vibAudio.load();
+        vibAudio = null;
+      }
+    } catch(e) {}
   }
 
   function contestar() { stopVibration(); goTo(4); }
